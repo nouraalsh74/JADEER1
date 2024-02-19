@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "300084710907",
+    "firebase_url": "https://jadeer-68521-default-rtdb.firebaseio.com",
+    "project_id": "jadeer-68521",
+    "storage_bucket": "jadeer-68521.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300084710907:android:1339f1c11ab4ec06a94f5e",
+        "android_client_info": {
+          "package_name": "com.jadeer.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZt35SsENKhMgfMzNIczsXLpxPlGIimIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
