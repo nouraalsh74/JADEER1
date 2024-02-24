@@ -38,29 +38,6 @@ class Theme_Information {
 }
 
 
-Future fetchDataFromFirestore(String collectionName , List<GeneralFireBaseList> _list) async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  try {
-    QuerySnapshot querySnapshot =
-    await firestore.collection(collectionName).get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      for (QueryDocumentSnapshot document in querySnapshot.docs) {
-        Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
-        String? name = data?['name'] as String?;
-        String? id = data?['id'] as String?;
-
-        if (name != null && id != null) {
-          _list.add(GeneralFireBaseList(name: name  , id: id));
-        }
-      }
-    }
-  } catch (e) {
-    print('Error fetching data: $e');
-  }
-}
-
 TextStyle ourTextStyle({Color? color, double? fontSize ,FontWeight?  fontWeight ,double?  height ,TextDecoration? decoration }){
   color ??= Colors.black;
   fontSize ??= 13;

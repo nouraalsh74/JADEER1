@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/myBtnSelector.dart';
@@ -22,11 +24,10 @@ import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
-import '../../models/educationModel.dart';
-import '../../models/experienceModel.dart';
 import '../../models/generalListFireBase.dart';
-import '../../models/licensesOrCertificationModel.dart';
-import '../../models/userDataModel.dart';
+import '../../models/userProfileModel.dart';
+import '../../providers/DataProvider.dart';
+import '../../providers/userProvider.dart';
 import 'educationFormPage.dart';
 import 'interestFormPage.dart';
 import 'licensesOrCertificationFormPage.dart';
@@ -55,7 +56,7 @@ class RegistrationScreenStep2 extends StatefulWidget {
   final GeneralFireBaseList? city ;
   final String? password ;
   final String? confirmPassword ;
-  
+
   @override
   State<RegistrationScreenStep2> createState() => _RegistrationScreenStep2State();
 }
@@ -84,9 +85,9 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
       fieldOfStudyList.clear();
-      await fetchDataFromFirestore("field_of_study" , fieldOfStudyList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("field_of_study" , fieldOfStudyList);
       durationList.clear();
-      await fetchDataFromFirestore("durations" , durationList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("durations" , durationList);
       durationList = durationList.reversed.toList();
       if(durationList.isNotEmpty) selectedDuration = durationList.first ;
       setState(() {});
@@ -412,23 +413,26 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
                               child: CupertinoActionSheetAction(
                                 child: Text('Browse' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 , )),
                                 onPressed: () async {
-
+                                  String? path = await pickFile();
+                                  if (path != null) {
+                                    Navigator.pop(context);
+                                  }
                                 },
                               ),
                             ),
                             if(filePathCV != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0 , left: 8 ),
-                              child: CupertinoActionSheetAction(
-                                child: Text('Remove Selected' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 ,  color: Theme_Information.Color_10)),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    filePathCV = null ;
-                                  });
-                                },
-                              ),
-                            )
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0 , left: 8 ),
+                                child: CupertinoActionSheetAction(
+                                  child: Text('Remove Selected' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 ,  color: Theme_Information.Color_10)),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    setState(() {
+                                      filePathCV = null ;
+                                    });
+                                  },
+                                ),
+                              )
                           ],
                           cancelButton: CupertinoActionSheetAction(
                             child: Text('Cancel', style: ourTextStyle( fontSize: 15 , fontWeight: FontWeight.w500 , color: Theme_Information.Color_10)),
@@ -486,8 +490,119 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
                 text: "Save",
                 callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
                   if (btnState == ButtonState.idle) {
+                    if(educations.isEmpty){
+                      EasyLoading.showError("Please add at least one education");
+                      return ;
+                    } else if(skills.length < 3){
+                      EasyLoading.showError("Please select at least 3 skill");
+                      return ;
+                    } else if (interests.length < 3){
+                      EasyLoading.showError("Please select at least 3 interest");
+                      return ;
+                    } else if (filePathCV== null || filePathCV!.isEmpty){
+                      EasyLoading.showError("Please upload your cv");
+                      return ;
+                    } else{
 
 
+
+
+                    // String? firstName ;
+                    // String? lastName ;
+                    // String? id ;
+                    // String? email ;
+                    // String? phoneNumber ;
+                    // String? dateOfBirth ;
+                    // GeneralFireBaseList? country ;
+                    // GeneralFireBaseList? city ;
+                    // String? password ;
+                    // String? confirmPassword ;
+                    // String? filePathCV;
+                    // List<GeneralFireBaseList> fieldOfStudyList = [] ;
+                    // GeneralFireBaseList? selectedFieldOfStudy ;
+                    // List<GeneralFireBaseList> durationList = [] ;
+                    // GeneralFireBaseList? selectedDuration ;
+                    // List<int> durationYearList = [1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10] ;
+                    // int? selectedDurationYear ;
+                    // List<Education> educations = [];
+                    // List<LicensesOrCertification> licensesOrCertification = [];
+                    // List<String> skills = [];
+                    // List<String> interests = [];
+                    //
+
+
+
+                    /*
+                    first_name
+                    last_name
+                    ID
+                    email
+                    phone_number
+                    date_of_birth
+                    country_id
+                    city_id
+                    password
+                    list of education (as object =>{university_id , degree_id , feild_of_study_id , start_date, end_date , grade})
+                    skill (as list of strings)
+                    list of experience (as object =>{feild_of_study_id , number_of_experience , year or month})
+                    interests (list of string)
+                    cv_path
+                     */
+
+
+                    Experience userExperience = Experience(
+                      name: '${selectedFieldOfStudy?.name}',
+                      numberOfYear: '${selectedDurationYear}',
+                      durationName: '${selectedDuration?.name}',
+                    );
+
+
+
+                    UserProfile userProfile = UserProfile(
+                      firstName: "${widget.firstName}",
+                      lastName: '${widget.lastName}',
+                      id: '${widget.id}',
+                      email: '${widget.email}',
+                      phoneNumber: '${widget.phoneNumber}',
+                      dateOfBirth: widget.dateOfBirth,
+                      countryId: '${widget.country!.id}',
+                      cityId: '${widget.city!.id}',
+                      password: '${widget.password}',
+                      education: educations,
+                      skills: skills,
+                      experience: userExperience,
+                      interests: interests,
+                      cvPath: '',
+                      licensesOrCertifications: licensesOrCertification,
+                    );
+                    Map<String, dynamic> userData = userProfile.toJson();
+
+
+                    if (widget.password!= null) {
+                      startLoading();
+                      await Provider.of<UserProvider>(context , listen: false).registerUser(widget.email! , widget.password! , userData , filePathCV).then((value) {
+                        if(value != null){
+                          if(value == true){
+                            stopLoading();
+                            // RegisteredSuccessfullyPage
+                            Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => RegisteredSuccessfullyPage()));
+                            return;
+                          } else{
+                            stopLoading();
+
+                            EasyLoading.showError("There is a problem , Please try again");
+                          }
+                        }
+                      });
+
+
+
+                    }
+                    else{
+                      EasyLoading.showError("Please Fill the Form");
+                      return;
+                    }
+                    }
                   }
                 },
               ),
@@ -515,6 +630,25 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
   }
 
 
+  Future<String?> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      setState(() {
+        filePathCV = result.files.single.path;
+      });
+
+      return filePathCV;
+    }
+
+    return null;
+  }
+
+
 
 
 }
+

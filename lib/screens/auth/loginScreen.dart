@@ -1,3 +1,7 @@
+
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +10,14 @@ import 'package:flutter_application_2/configuration/theme.dart';
 import 'package:flutter_application_2/screens/auth/firstRegistrationScreen.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:loading_btn/loading_btn.dart';
+import 'package:provider/provider.dart';
 
 import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
+import '../../models/userProfileModel.dart';
+import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -62,11 +69,36 @@ class _LoginPageState extends State<LoginPage> {
               // LoginPage
               // Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => LoginPage()));
               if (btnState == ButtonState.idle) {
+                startLoading();
+                try {
+                  UserCredential userCredential = await loginUser(_email.text, _password.text);
+                  // Login successful, you can navigate to the next screen or retrieve user data here
+                  if(userCredential.user != null){
+                    print("Login successful! User ID: ${userCredential.user!.uid}");
+                    // Map<String, dynamic>? userData = await getUserData(userCredential.user!.uid);
+                    Map<String, dynamic>? userData = await Provider.of<UserProvider>(context , listen: false).getUserData(userCredential.user!.uid);
+
+                    if(userData != null){
+                      log("User Data: $userData");
+                      String jsonString = jsonEncode(userData);
+                      UserProfile userProfile = userProfileFromJson(jsonString);
+                      await  Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
+                      stopLoading();
+                      Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                    } else{
+                      stopLoading();
+                      EasyLoading.showError("Login failed");
+                    }
+
+                  }
+
+                } catch (e) {
+                  stopLoading();
+                  EasyLoading.showError("Login failed");
+                  print("Login failed: $e");
+                }
 
               }
-
-
-
             },
           ),
 
@@ -92,6 +124,26 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+
+
+  Future<UserCredential> loginUser(String email, String password) async {
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return userCredential;
+    } catch (e) {
+      print("Error logging in: $e");
+      throw e; // Throw the error to handle it in the UI
+    }
+  }
+
 }
+
+
 
 

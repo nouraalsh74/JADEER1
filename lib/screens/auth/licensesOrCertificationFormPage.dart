@@ -12,9 +12,8 @@ import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
-import '../../models/educationModel.dart';
 import '../../models/generalListFireBase.dart';
-import '../../models/licensesOrCertificationModel.dart';
+import '../../models/userProfileModel.dart';
 
 class LicensesOrCertificationFormPage extends StatefulWidget {
   const LicensesOrCertificationFormPage({Key? key}) : super(key: key);

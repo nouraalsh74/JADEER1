@@ -1,19 +1,27 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/configuration/images.dart';
 import 'package:loading_btn/loading_btn.dart';
+import 'package:provider/provider.dart';
 
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../configuration/theme.dart';
+import '../../models/userProfileModel.dart';
+import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
 
 class RegisteredSuccessfullyPage extends StatefulWidget {
-  const RegisteredSuccessfullyPage({Key? key}) : super(key: key);
-
+  const RegisteredSuccessfullyPage({Key? key , this.userUid}) : super(key: key);
+  final String? userUid ;
   @override
   State<RegisteredSuccessfullyPage> createState() => _RegisteredSuccessfullyPageState();
 }
 
 class _RegisteredSuccessfullyPageState extends State<RegisteredSuccessfullyPage> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,12 +39,17 @@ class _RegisteredSuccessfullyPageState extends State<RegisteredSuccessfullyPage>
             callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
               if (btnState == ButtonState.idle) {
                   startLoading();
-                  await Future.delayed(const Duration(seconds: 1));
-                  // LoginPage
+
+                Map<String, dynamic>? userData =
+                    await Provider.of<UserProvider>(context, listen: false)
+                        .getUserData(widget.userUid!);
+                String jsonString = jsonEncode(userData);
+                UserProfile userProfile = userProfileFromJson(jsonString);
+                await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
                   print("Done");
                   stopLoading();
                   // HomePage
-                  // Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
 
                   return;
               }

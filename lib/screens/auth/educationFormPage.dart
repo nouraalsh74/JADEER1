@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/configuration/images.dart';
+import 'package:flutter_application_2/providers/DataProvider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_btn/loading_btn.dart';
+import 'package:provider/provider.dart';
 
 import '../../commonWidgets/MyDatePicker.dart';
 import '../../commonWidgets/backIcon.dart';
@@ -12,8 +14,8 @@ import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
-import '../../models/educationModel.dart';
 import '../../models/generalListFireBase.dart';
+import '../../models/userProfileModel.dart';
 
 class EducationFormPage extends StatefulWidget {
   const EducationFormPage({Key? key}) : super(key: key);
@@ -48,11 +50,11 @@ class _EducationFormPageState extends State<EducationFormPage> {
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
       universitiesList.clear();
-      await fetchDataFromFirestore("universities" , universitiesList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("universities" , universitiesList);
       degreeList.clear();
-      await fetchDataFromFirestore("degree" , degreeList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("degree" , degreeList);
       fieldOfStudyList.clear();
-      await fetchDataFromFirestore("field_of_study" , fieldOfStudyList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("field_of_study" , fieldOfStudyList);
       setState(() {});
       EasyLoading.dismiss();
     });

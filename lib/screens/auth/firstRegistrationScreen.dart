@@ -4,6 +4,7 @@ import 'package:flutter_application_2/screens/auth/secondRegistrationScreen.dart
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:loading_btn/loading_btn.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:provider/provider.dart';
 import '../../commonWidgets/MyDatePicker.dart';
 import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/customDatePickerTheme.dart';
@@ -14,6 +15,7 @@ import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
 import '../../models/generalListFireBase.dart';
+import '../../providers/DataProvider.dart';
 
 class RegistrationScreenStep1 extends StatefulWidget {
   const RegistrationScreenStep1({Key? key}) : super(key: key);
@@ -47,9 +49,9 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
       countryList.clear();
-      await fetchDataFromFirestore("countries" , countryList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("countries" , countryList);
       cityList.clear();
-      await fetchDataFromFirestore("cities" , cityList);
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("cities" , cityList);
       setState(() {});
       EasyLoading.dismiss();
     });
@@ -256,18 +258,41 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   text: "Next",
                   callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
                     if (btnState == ButtonState.idle) {
-                      Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => RegistrationScreenStep2(
-                        id: _id.text,
-                        email: _email.text,
-                        city:selectedCity,
-                        password: _password.text,
-                        confirmPassword:_confirmPassword.text,
-                        country: selectedCountry,
-                        dateOfBirth:_dateOfBirth.text,
-                        firstName:_firstName.text,
-                        lastName:_lastName.text,
-                        phoneNumber: _phoneNumber.text,
-                      )));
+                      if(selectedCountry == null) {
+                        EasyLoading.showError("Please Select Country");
+                      }
+                      else if(selectedCity == null) {
+                        EasyLoading.showError("Please Select City");
+                      }
+                      else if(_password.text != _confirmPassword.text) {
+                        EasyLoading.showError("Password is not matched!");
+                      } else if (_formKey.currentState!.validate()) {
+                        startLoading();
+                        await Future.delayed(const Duration(seconds: 1));
+                        // LoginPage
+                        print("Done");
+                        stopLoading();
+                        if (context.mounted) {
+                          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => RegistrationScreenStep2(
+                            id: _id.text,
+                            email: _email.text,
+                            city:selectedCity,
+                            password: _password.text,
+                            confirmPassword:_confirmPassword.text,
+                            country: selectedCountry,
+                            dateOfBirth:_dateOfBirth.text,
+                            firstName:_firstName.text,
+                            lastName:_lastName.text,
+                            phoneNumber: _phoneNumber.text,
+                          )));
+                        }
+                        return;
+                      }
+                      else{
+                        EasyLoading.showError("Please Fill the Form");
+                        return;
+
+                      }
 
                     }
                   },
@@ -297,3 +322,4 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
 
 }
+

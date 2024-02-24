@@ -5,10 +5,11 @@ import '../models/generalListFireBase.dart';
 
 class MyDropDownWidget extends StatefulWidget {
   MyDropDownWidget(
-      {Key? key, required this.listOfData, this.title,required this.callBack, required this.selectedValue})
+      {Key? key, required this.listOfData, this.title,required this.callBack, required this.selectedValue , this.isEditable = true})
       : super(key: key);
   late GeneralFireBaseList? selectedValue ;
   final String? title ;
+  final bool? isEditable ;
   final Function(GeneralFireBaseList? newValue)? callBack ;
   final List<GeneralFireBaseList>? listOfData ;
 
@@ -38,22 +39,25 @@ class _MyDropDownWidgetState extends State<MyDropDownWidget> {
               borderRadius: BorderRadius.circular(15.0),
             ),
             child: Center(
-              child: DropdownButton<GeneralFireBaseList>(
+              child: IgnorePointer(
+                ignoring: !widget.isEditable!,
+                child: DropdownButton<GeneralFireBaseList>(
 
-                borderRadius: BorderRadius.circular(15.0),
-                isExpanded: true,
-                padding: const EdgeInsets.only(right: 15 , left: 15),
-                underline: Container(),
-                value: widget.selectedValue,
-                onChanged: (GeneralFireBaseList? newValue) {
-                  widget.callBack!(newValue);
-                },
-                items: widget.listOfData!.map((GeneralFireBaseList value) {
-                  return DropdownMenuItem<GeneralFireBaseList>(
-                    value: value,
-                    child: Text("${value.name}" , style: ourTextStyle(color: Theme_Information.Color_5)),
-                  );
-                }).toList(),
+                  borderRadius: BorderRadius.circular(15.0),
+                  isExpanded: true,
+                  padding: const EdgeInsets.only(right: 15 , left: 15),
+                  underline: Container(),
+                  value: widget.selectedValue,
+                  onChanged: (GeneralFireBaseList? newValue) {
+                    widget.callBack!(newValue);
+                  },
+                  items: widget.listOfData!.map((GeneralFireBaseList value) {
+                    return DropdownMenuItem<GeneralFireBaseList>(
+                      value: value,
+                      child: Text("${value.name}" , style: ourTextStyle(color: Theme_Information.Color_5)),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           )

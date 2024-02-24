@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '../configuration/images.dart';
 
 class BackIcon extends StatelessWidget {
-  const BackIcon({Key? key , this.onBack , this.backWidget , this.titleWidget}) : super(key: key);
+  const BackIcon({Key? key , this.onBack , this.backWidget , this.titleWidget, this.padding}) : super(key: key);
   final Function()? onBack ;
   final Widget? backWidget ;
+  final EdgeInsetsGeometry? padding ;
   final Widget? titleWidget ;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: padding ?? EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: titleWidget != null? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
         children: [
