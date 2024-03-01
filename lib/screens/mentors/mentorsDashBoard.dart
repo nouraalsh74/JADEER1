@@ -20,23 +20,9 @@ class _MentorsDashBoardState extends State<MentorsDashBoard> {
   List<String> allChips = ['All', 'HR', 'Accounting', 'Information Systems'];
   String selectedChip = 'All';
 
-  // Your data that needs to be filtered based on the selected chip
-  List<String> dataList = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    // Add more items as needed
-  ];
   List<Mentor> mentors = [];
   List<Mentor> mentorsBase = [];
-  List<String> filteredList() {
-    if (selectedChip == 'All') {
-      return dataList;
-    } else {
-      return dataList.where((item) => item.contains(selectedChip)).toList();
-    }
-  }
+
   List<Mentor> filterMentorsByMajor(String major) {
     if (major == 'All') {
       return mentorsBase; // Return all mentors if 'All' chip is selected

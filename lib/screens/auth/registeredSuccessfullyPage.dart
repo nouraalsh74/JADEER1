@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/configuration/images.dart';
 import 'package:loading_btn/loading_btn.dart';
@@ -12,8 +13,7 @@ import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
 
 class RegisteredSuccessfullyPage extends StatefulWidget {
-  const RegisteredSuccessfullyPage({Key? key , this.userUid}) : super(key: key);
-  final String? userUid ;
+  const RegisteredSuccessfullyPage({Key? key}) : super(key: key);
   @override
   State<RegisteredSuccessfullyPage> createState() => _RegisteredSuccessfullyPageState();
 }
@@ -37,21 +37,25 @@ class _RegisteredSuccessfullyPageState extends State<RegisteredSuccessfullyPage>
             text: "Go to Home Page",
 
             callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
+
+
               if (btnState == ButtonState.idle) {
+                User? user = FirebaseAuth.instance.currentUser;
                   startLoading();
-
-                Map<String, dynamic>? userData =
+                  if(user != null){
+                    Map<String, dynamic>? userData =
                     await Provider.of<UserProvider>(context, listen: false)
-                        .getUserData(widget.userUid!);
-                String jsonString = jsonEncode(userData);
-                UserProfile userProfile = userProfileFromJson(jsonString);
-                await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
-                  print("Done");
-                  stopLoading();
-                  // HomePage
-                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                        .getUserData(user.uid);
+                    String jsonString = jsonEncode(userData);
+                    UserProfile userProfile = userProfileFromJson(jsonString);
+                    await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
+                    print("Done");
+                    stopLoading();
+                    // HomePage
+                    Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
 
-                  return;
+                    return;
+                  }
               }
             },
           ),
