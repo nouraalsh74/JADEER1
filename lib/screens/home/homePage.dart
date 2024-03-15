@@ -12,6 +12,9 @@ import '../../models/userProfileModel.dart';
 import '../../providers/drawerProvider.dart';
 import '../../providers/userProvider.dart';
 import '../mentors/mentorsDashBoard.dart';
+import '../opportunities/myApplyOpportunity.dart';
+import '../opportunities/opportunitiesDashboard.dart';
+import '../opportunities/savedopportunities.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -85,7 +88,11 @@ class _HomePageState extends State<HomePage> {
                   Center(child: Row(
                     children: [
                       SizedBox(width: size_W(10),),
-                      Expanded(child: Image.asset("${ImagePath.recommendedBox}" , scale: 3)),
+                      Expanded(child: InkWell(
+                          onTap: (){
+                            Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunitiesDashboard()));
+                          },
+                          child: Image.asset("${ImagePath.recommendedBox}" , scale: 3))),
                       SizedBox(width: size_W(10),),
                     ],
                   )),
@@ -98,18 +105,26 @@ class _HomePageState extends State<HomePage> {
                         Text("Discover more", style: ourTextStyle( fontWeight: FontWeight.w500)),
                         Row(
                           children: [
-                            HomePageItem(text: "View your applications" , callBack: (){print("1");}),
+                            HomePageItem(text: "View your applications" , callBack: (){
+                              print("1");
+                              Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => MyApplyOpportunity()));
+                            }),
                             HomePageItem(text: "View your activity", callBack: (){print("2");}),
                           ],
                         ),
 
                         Row(
                           children: [
-                            HomePageItem(text: "Saved opportunities", callBack: (){print("3");}),
+                            HomePageItem(text: "Saved opportunities", callBack: (){
+                              // print("3");
+
+                              Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => SavedOpportunities()));
+                            }),
                             HomePageItem(text: "Discover mentors", callBack: (){
                               print("4");
                             //MentorsDashBoard
                               Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => MentorsDashBoard()));
+
                             }),
                           ],
                         ),

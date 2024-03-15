@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/configuration/images.dart';
-import 'package:flutter_application_2/providers/DataProvider.dart';
+import 'package:flutter_application_2/providers/dataProvider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_btn/loading_btn.dart';
@@ -65,9 +65,6 @@ class _EducationFormPageState extends State<EducationFormPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(

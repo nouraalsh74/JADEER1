@@ -8,17 +8,19 @@ import '../configuration/theme.dart';
 
 class MyLoadingBtn extends StatelessWidget {
   final String? text ;
+  final TextStyle? textStyle ;
   final Function(Function startLoading, Function stopLoading, ButtonState btnState)? callBack ;
   final double? borderRadius ;
   final double? width ;
+  final double? height ;
   final Color? color ;
   final Widget? icon ;
-  const MyLoadingBtn({Key? key ,required this.text, required this.callBack , this.borderRadius , this.width, this.icon , this.color }) : super(key: key);
+  const MyLoadingBtn({Key? key ,required this.text, required this.callBack , this.borderRadius ,this.textStyle ,this.height , this.width, this.icon , this.color }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return LoadingBtn(
-      height: size_H(40),
+      height: height ?? size_H(40),
       borderRadius: borderRadius ?? 15,
       animate: true,
       color: color ?? Theme_Information.Primary_Color,
@@ -34,7 +36,7 @@ class MyLoadingBtn extends StatelessWidget {
       child:  Row(
         mainAxisAlignment: icon != null ? MainAxisAlignment.spaceAround :MainAxisAlignment.center,
         children: [
-          Text("$text", style: ourTextStyle(fontSize: 15 , color: Theme_Information.Color_1)),
+          Text("$text", style: textStyle ?? ourTextStyle(fontSize: 15 , color: Theme_Information.Color_1)),
           if(icon != null)icon!,
         ],
       ),

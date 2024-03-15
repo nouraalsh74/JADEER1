@@ -5,8 +5,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../../commonWidgets/backIcon.dart';
+import '../../models/generalListFireBase.dart';
 import '../../models/mentorsModel.dart';
-import '../../providers/DataProvider.dart';
+import '../../providers/dataProvider.dart';
 import 'mentorsDetails.dart';
 
 class MentorsDashBoard extends StatefulWidget {
@@ -17,17 +18,19 @@ class MentorsDashBoard extends StatefulWidget {
 }
 
 class _MentorsDashBoardState extends State<MentorsDashBoard> {
-  List<String> allChips = ['All', 'HR', 'Accounting', 'Information Systems'];
-  String selectedChip = 'All';
+  // List<String> allChips = ['All', 'HR', 'Accounting', 'Information Systems'];
+  List<GeneralFireBaseList> allChips = [];
+  GeneralFireBaseList? selectedChip ;
+  // String selectedChip = 'All';
 
   List<Mentor> mentors = [];
   List<Mentor> mentorsBase = [];
 
-  List<Mentor> filterMentorsByMajor(String major) {
-    if (major == 'All') {
+  List<Mentor> filterMentorsByMajor(GeneralFireBaseList major) {
+    if (major.name == 'All') {
       return mentorsBase; // Return all mentors if 'All' chip is selected
     } else {
-      return mentorsBase.where((mentor) => mentor.major == major).toList();
+      return mentorsBase.where((mentor) => mentor.major == major.name).toList();
     }
   }
 
@@ -42,6 +45,9 @@ class _MentorsDashBoardState extends State<MentorsDashBoard> {
       mentors.clear();
       await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestoreMentor("mentors" , mentors);
       mentorsBase = mentors ;
+      allChips.add(GeneralFireBaseList(id: "00" , name: "All"));
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("specialties_for_mentors" , allChips);
+      selectedChip = allChips.first ;
       setState(() {});
       EasyLoading.dismiss();
     });
@@ -104,18 +110,18 @@ class _MentorsDashBoardState extends State<MentorsDashBoard> {
                                         children: allChips.map((chip) {
                                           return Padding(
                                             padding: const EdgeInsets.only(right: 2.0 , left: 2.0),
-                                            child: ChoiceChip(
+                                            child:  ChoiceChip(
                                               elevation: 0 ,
                                               backgroundColor: selectedChip == chip
                                                   ? Theme_Information.Color_1
                                                   : Theme_Information.Primary_Color,
                                               labelStyle: ourTextStyle(
-                                                fontSize: 12,
-                                                color: selectedChip == chip
-                                                    ? Theme_Information.Primary_Color
-                                                    : Theme_Information.Color_1
+                                                  fontSize: 12,
+                                                  color: selectedChip == chip
+                                                      ? Theme_Information.Primary_Color
+                                                      : Theme_Information.Color_1
                                               ),
-                                              label: Text(chip),
+                                              label: Text("${chip.name}"),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(25.0),
                                                 side: BorderSide.none,
@@ -123,8 +129,9 @@ class _MentorsDashBoardState extends State<MentorsDashBoard> {
                                               selected: selectedChip == chip,
                                               onSelected: (selected) {
                                                 setState(() {
-                                                  selectedChip = selected ? chip : 'All';
-                                                  mentors = filterMentorsByMajor(selectedChip);
+                                                  selectedChip = selected ? chip : allChips.first;
+                                                  // selectedChip = selected ? chip : 'All';
+                                                  mentors = filterMentorsByMajor(selectedChip!);
                                                 });
                                               },
                                             ),
@@ -140,8 +147,6 @@ class _MentorsDashBoardState extends State<MentorsDashBoard> {
                           ),
                         ),
                       ),
-                  
-                  
                     ],
                   ),
                 ),

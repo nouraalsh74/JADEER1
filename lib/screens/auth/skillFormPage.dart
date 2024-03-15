@@ -62,9 +62,6 @@ class _SkillFormPageState extends State<SkillFormPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(

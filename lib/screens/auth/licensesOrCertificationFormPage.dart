@@ -37,9 +37,6 @@ class _LicensesOrCertificationFormPageState extends State<LicensesOrCertificatio
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(

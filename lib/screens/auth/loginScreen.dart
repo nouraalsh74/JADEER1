@@ -17,6 +17,7 @@ import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../models/userProfileModel.dart';
+import '../../providers/opportunityProvider.dart';
 import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
 
@@ -77,14 +78,19 @@ class _LoginPageState extends State<LoginPage> {
                     print("Login successful! User ID: ${userCredential.user!.uid}");
                     // Map<String, dynamic>? userData = await getUserData(userCredential.user!.uid);
                     Map<String, dynamic>? userData = await Provider.of<UserProvider>(context , listen: false).getUserData(userCredential.user!.uid);
-
+                    await Provider.of<OpportunityProvider>(context, listen: false).initOpportunity(context) ;
                     if(userData != null){
                       log("User Data: $userData");
                       String jsonString = jsonEncode(userData);
                       UserProfile userProfile = userProfileFromJson(jsonString);
                       await  Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
                       stopLoading();
-                      Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  HomePage()),
+                              (Route<dynamic> route) => false);
                     } else{
                       stopLoading();
                       EasyLoading.showError("Login failed");

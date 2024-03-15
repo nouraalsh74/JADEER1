@@ -15,7 +15,7 @@ import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
 import '../../models/generalListFireBase.dart';
-import '../../providers/DataProvider.dart';
+import '../../providers/dataProvider.dart';
 
 class RegistrationScreenStep1 extends StatefulWidget {
   const RegistrationScreenStep1({Key? key}) : super(key: key);
@@ -63,9 +63,6 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Form(

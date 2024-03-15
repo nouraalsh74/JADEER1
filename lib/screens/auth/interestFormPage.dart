@@ -55,9 +55,6 @@ class _InterestFormPageState extends State<InterestFormPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(

@@ -36,7 +36,7 @@ class MyConfirmationDialog{
 
               Padding(
                 padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
-                child: Container(child: Text("${body}" , style: ourTextStyle(),)),
+                child: Container(child: Text("${body}" ,textAlign: TextAlign.center, style: ourTextStyle(),)),
               ),
 
 

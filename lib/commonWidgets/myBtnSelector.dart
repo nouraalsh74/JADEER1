@@ -47,7 +47,7 @@ class _MyBtnSelectorState extends State<MyBtnSelector> {
                   children: [
                     SizedBox(width: size_W(30),),
                     if(widget.iconWidget != null)widget.iconWidget!,
-                    if(widget.iconWidget == null)Icon(Icons.add , color: Theme_Information.Primary_Color,),
+                    if(widget.iconWidget == null) Icon(Icons.add , color: Theme_Information.Primary_Color,),
                     SizedBox(width: size_W(30),),
                     Text("${widget.title}" , style: ourTextStyle(color: Theme_Information.Primary_Color, fontWeight: FontWeight.w500),)
                   ],

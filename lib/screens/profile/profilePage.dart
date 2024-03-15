@@ -26,7 +26,7 @@ import '../../configuration/theme.dart';
 import '../../models/generalListFireBase.dart';
 // import '../../models/licensesOrCertificationModel.dart';
 import '../../models/userProfileModel.dart';
-import '../../providers/DataProvider.dart';
+import '../../providers/dataProvider.dart';
 import '../../providers/userProvider.dart';
 import '../auth/educationFormPage.dart';
 import '../auth/interestFormPage.dart';
@@ -254,15 +254,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             if(value == true){
 
 
-                              Map<String, dynamic>? userData =
-                              await Provider.of<UserProvider>(context, listen: false)
-                                  .getUserData(uid);
+                              Map<String, dynamic>? userData = await Provider.of<UserProvider>(context, listen: false).getUserData(uid);
                               String jsonString = jsonEncode(userData);
                               UserProfile userProfile = userProfileFromJson(jsonString);
                               await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
                               stopLoading();
                               EasyLoading.showSuccess("Profile Updated Successfully");
-                              Navigator.pushReplacement(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          HomePage()),
+                                      (Route<dynamic> route) => false);
                               return;
                             } else{
                               stopLoading();

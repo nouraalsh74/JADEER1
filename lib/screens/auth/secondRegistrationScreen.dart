@@ -26,7 +26,7 @@ import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
 import '../../models/generalListFireBase.dart';
 import '../../models/userProfileModel.dart';
-import '../../providers/DataProvider.dart';
+import '../../providers/dataProvider.dart';
 import '../../providers/userProvider.dart';
 import 'educationFormPage.dart';
 import 'interestFormPage.dart';
@@ -99,9 +99,6 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(

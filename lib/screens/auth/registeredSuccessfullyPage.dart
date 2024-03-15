@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../configuration/theme.dart';
 import '../../models/userProfileModel.dart';
+import '../../providers/opportunityProvider.dart';
 import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
 
@@ -46,13 +47,19 @@ class _RegisteredSuccessfullyPageState extends State<RegisteredSuccessfullyPage>
                     Map<String, dynamic>? userData =
                     await Provider.of<UserProvider>(context, listen: false)
                         .getUserData(user.uid);
+                    await Provider.of<OpportunityProvider>(context, listen: false).initOpportunity(context) ;
                     String jsonString = jsonEncode(userData);
                     UserProfile userProfile = userProfileFromJson(jsonString);
                     await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
                     print("Done");
                     stopLoading();
                     // HomePage
-                    Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                HomePage()),
+                            (Route<dynamic> route) => false);
 
                     return;
                   }

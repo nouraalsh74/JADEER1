@@ -48,9 +48,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
-        onWillPop(context);
-      },
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(
@@ -166,7 +163,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         stopLoading();
                         Provider.of<UserProvider>(context , listen: false).updatePasswordinDatabase(_password.text);
                         EasyLoading.showSuccess("Password Updated Successfully");
-                        Navigator.pushReplacement(context, MyCustomRoute(builder: (BuildContext context) => HomePage()));
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    HomePage()),
+                                (Route<dynamic> route) => false);
                         return;
                       } catch (e){
                         stopLoading();

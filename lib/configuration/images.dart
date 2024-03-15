@@ -29,6 +29,14 @@ class ImagePath {
   static String linkedin = "assets/images/linkedin.png" ;
   static String link = "assets/images/link.png" ;
   static String email = "assets/images/email.png" ;
+  static String employee = "assets/images/employee.png" ;
+  static String pin = "assets/images/pin.png" ;
+  static String pursuit = "assets/images/pursuit.png" ;
+  static String time = "assets/images/time.png" ;
+  static String show_details = "assets/images/show_details.png" ;
+  static String empty_heart = "assets/images/empty_heart.png" ;
+  static String fill_heart = "assets/images/fill_heart.png" ;
+  static String share = "assets/images/share.png" ;
 
 }
 
