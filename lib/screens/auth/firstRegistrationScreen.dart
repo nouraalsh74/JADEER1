@@ -82,6 +82,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                 SizedBox(height: size_H(40),),
                 /// _firstName
                 MyTextForm(
+                  isRequired: true,
                   controller: _firstName,
                   title: "First Name",
                   hint: "Enter First Name",
@@ -95,6 +96,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                 SizedBox(height: size_H(20),),
                 /// _lastName
                 MyTextForm(
+                  isRequired: true,
                   controller: _lastName,
                   title: "Last Name",
                   hint: "Enter Last Name",
@@ -109,6 +111,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _id
                 MyTextForm(
+                  isRequired: true,
                   controller: _id,
                   title: "ID",
                   hint: "Enter Your ID",
@@ -125,6 +128,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _email
                 MyTextForm(
+                  isRequired: true,
                   controller: _email,
                   title: "Email",
                   keyboardType: TextInputType.emailAddress,
@@ -143,6 +147,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _phoneNumber
                 MyTextForm(
+                  isRequired: true,
                   controller: _phoneNumber,
                   keyboardType: TextInputType.number,
                   title: "Phone Number",
@@ -172,6 +177,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                     });
                   },
                   child: MyTextForm(
+                    isRequired: true,
                     enabled: false,
                     controller: _dateOfBirth,
                     title: "Date of Birth",
@@ -188,6 +194,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _country
                 MyDropDownWidget(
+                  isRequired: true,
                   // controller: _country,
                   title: "Country",
                   selectedValue: selectedCountry,
@@ -202,6 +209,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _city
                 MyDropDownWidget(
+                  isRequired: true,
                   // controller: _country,
                   title: "City",
                   selectedValue: selectedCity,
@@ -216,6 +224,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _password
                 MyTextForm(
+                  isRequired: true,
                   controller: _password,
                   isPassword: true,
                   isSuffixIcon: true,
@@ -232,6 +241,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
 
                 /// _confirmPassword
                 MyTextForm(
+                  isRequired: true,
                   controller: _confirmPassword,
                   isPassword: true,
                   isSuffixIcon: true,
@@ -261,8 +271,8 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                       else if(selectedCity == null) {
                         EasyLoading.showError("Please Select City");
                       }
-                      else if(_password.text != _confirmPassword.text) {
-                        EasyLoading.showError("Password is not matched!");
+                      else if(_password.text.isEmpty) {
+                        EasyLoading.showError("Please fill the Password");
                       } else if (_formKey.currentState!.validate()) {
                         startLoading();
                         await Future.delayed(const Duration(seconds: 1));

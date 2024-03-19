@@ -155,8 +155,9 @@ class _MyApplyOpportunityState extends State<MyApplyOpportunity> {
       padding: const EdgeInsets.only(left: 15  , right: 15 , bottom: 5),
       child: GestureDetector(
         onTap: (){
-          // MentorDetailsPage
-          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: savedOpportunity.opportunity ,)));
+          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(
+            opportunity: savedOpportunity.opportunity ,
+             applyOpportunityID: savedOpportunity.applyOpportunityID,)));
         },
         child: Card(
           shape: RoundedRectangleBorder(

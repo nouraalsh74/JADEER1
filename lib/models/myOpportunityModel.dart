@@ -7,6 +7,7 @@ class MyAppliedOpportunity {
   String? cvPath;
   List<Education>? education;
   String? dateOfBirth;
+  String? status;
   String? lastName;
   Experience? experience;
   List<String>? skills;
@@ -16,6 +17,7 @@ class MyAppliedOpportunity {
   String? phoneNumber;
   List<String>? interests;
   String? firstName;
+  String? applyOpportunityID;
   String? email;
   String? countryId;
   String? cityId;
@@ -26,9 +28,11 @@ class MyAppliedOpportunity {
     this.education,
     this.dateOfBirth,
     this.lastName,
+    this.applyOpportunityID,
     this.experience,
     this.skills,
     this.password,
+    this.status,
     this.licensesOrCertifications,
     this.userId,
     this.phoneNumber,
@@ -44,11 +48,13 @@ class MyAppliedOpportunity {
     return MyAppliedOpportunity(
       id: json['ID'] ?? '',
       cvPath: json['cv_path'],
+      applyOpportunityID: json['apply_id'],
       education: (json['education'] as List<dynamic>?)
           ?.map((e) => Education.fromJson(e))
           .toList(),
       dateOfBirth: json['date_of_birth'],
       lastName: json['last_name'],
+      status: json['status'],
       experience: json['experience'] != null
           ? Experience.fromJson(json['experience'])
           : null,

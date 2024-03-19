@@ -7,9 +7,11 @@ class MyBtnSelector extends StatefulWidget {
   required this.hint,
   required this.title,
   this.iconWidget,
+  this.isRequired = false,
   required this.callback,
   }) : super(key: key);
   final String? title ;
+  final bool isRequired ;
   final String? hint ;
   final Widget? iconWidget ;
   final Function() callback;
@@ -25,11 +27,17 @@ class _MyBtnSelectorState extends State<MyBtnSelector> {
       padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
-            child: Align(
-                alignment: Alignment.topLeft,
-                child: Text("${widget.title}",style: ourTextStyle(color: Theme_Information.Primary_Color))),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text("${widget.title}", style: ourTextStyle(color: Theme_Information.Primary_Color))),
+              ),
+              if(widget.isRequired)
+                Text("*" , style: ourTextStyle(color: Theme_Information.Color_10 , fontSize: 15),)
+            ],
           ),
           SizedBox(height: size_H(10),),
           GestureDetector(

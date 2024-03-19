@@ -179,7 +179,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                             selectedFieldOfStudy = element ;
                           }
                         });
-                        selectedDurationYear = int.tryParse(userProfile.experience?.numberOfYear??"0") ?? 0;
+                        selectedDurationYear = int.tryParse(userProfile.experience?.numberOfYear??"");
                         durationList.forEach((element) {
                           if(element.name == userProfile.experience!.durationName!) {
                             selectedDuration = element ;
@@ -792,7 +792,8 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
 
                                             Map<String, dynamic> userData = userProfile.toJson();
                                             userData.addAll({
-                                              "opportunity": widget.opportunity?.toMap()
+                                              "opportunity": widget.opportunity?.toMap(),
+                                              "status": "pending"
                                             });
                                             EasyLoading.show();
 

@@ -6,6 +6,7 @@ class MyTextForm extends StatefulWidget {
   required this.controller,
   required this.hint,
   this.title,
+    this.isRequired = false,
     this.isPassword = false,
     this.isSuffixIcon = false,
     this.enabled = true,
@@ -18,6 +19,7 @@ class MyTextForm extends StatefulWidget {
   final TextInputType? keyboardType ;
   final bool? isSuffixIcon ;
   final bool? isPadding ;
+  final bool isRequired ;
   final bool? enabled ;
   late  bool isPassword  ;
   final TextEditingController? controller ;
@@ -34,12 +36,18 @@ class _MyTextFormState extends State<MyTextForm> {
       padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
       child: Column(
         children: [
-         if(widget.title != null) Padding(
-            padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
-            child: Align(
-                alignment: Alignment.topLeft,
-                child: Text("${widget.title}", style: ourTextStyle(color: Theme_Information.Primary_Color))),
-          ),
+         if(widget.title != null) Row(
+           children: [
+             Padding(
+                padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text("${widget.title}", style: ourTextStyle(color: Theme_Information.Primary_Color))),
+              ),
+             if(widget.isRequired)
+               Text("*" , style: ourTextStyle(color: Theme_Information.Color_10 , fontSize: 15),)
+           ],
+         ),
           if(widget.title != null) SizedBox(height: size_H(10),),
           TextFormField(
               keyboardType: widget.keyboardType,
@@ -69,10 +77,10 @@ class _MyTextFormState extends State<MyTextForm> {
   }
 
   Widget suffixIcon() {
-    if(widget.enabled != null && !widget.enabled!){
-      return Icon(Icons.keyboard_arrow_down);
-    } else if (!widget.isSuffixIcon!) {
+    if (!widget.isSuffixIcon!) {
       return SizedBox();
+    } else if(widget.enabled != null && !widget.enabled!){
+      return Icon(Icons.keyboard_arrow_down);
     } else {
       return InkWell(
                   onTap: (){

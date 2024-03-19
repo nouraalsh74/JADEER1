@@ -20,8 +20,9 @@ import '../../providers/opportunityProvider.dart';
 import 'applyOpportunityPage.dart';
 
 class OpportunityDetailsPage extends StatefulWidget {
-  const OpportunityDetailsPage({Key? key , this.opportunity}) : super(key: key);
+  const OpportunityDetailsPage({Key? key , this.opportunity, this.applyOpportunityID}) : super(key: key);
   final Opportunity? opportunity ;
+  final String? applyOpportunityID ;
   @override
   State<OpportunityDetailsPage> createState() => _OpportunityDetailsPageState();
 }
@@ -33,6 +34,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   double myRate = 0.0 ;
   List<Courses> courses = [] ;
   bool? isApplied  ;
+  String? opportunityStatus  ;
   @override
   void initState() {
     // TODO: implement initState
@@ -53,9 +55,17 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
       if(isAppliedN != null){
         isApplied = isAppliedN ;
         setState(() {});
+        if(isApplied != null && isApplied == true){
+          Provider.of<OpportunityProvider>(context, listen: false).getStatus(opportunity_id: widget.opportunity!.id, callBack: (String? status){
+            if(status != null){
+              print("status ${status}");
+              opportunityStatus = status ;
+              setState(() {});
+            }
+          });
+        }
       }
     });
-
   }
 
   Future<void> getShareLink(BuildContext context) async {
@@ -81,10 +91,10 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
     await Share.share("${dynamicLink.shortUrl}");
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton:  floatingActionButton(context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
@@ -534,6 +544,56 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         ],
       ),
     );
+  }
+
+  SingleChildRenderObjectWidget floatingActionButton(BuildContext context) {
+    return isApplied != null && isApplied == true && opportunityStatus == "pending" ?   Padding(
+      padding:  EdgeInsets.only(right: size_W(10) , left: size_W(10) , bottom: size_H(15) , top: size_H(15)),
+      child: MyLoadingBtn(
+        borderRadius: 30,
+        width:  size_W(170),
+        text: "Get A response?",
+        color: Theme_Information.Primary_Color,
+        callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
+          MyConfirmationDialog().showConfirmationDialog(
+            context: context,
+            title: "Confirmation",
+            body: "Did you get a response? \n Help us to track your applications",
+            cancelBtn: "Rejected",
+            saveBtn: "Accepted",
+            onSave: (){
+              // status
+              // accept , reject , pending
+              ///
+              /// set to accept
+              changeStatus(context , "accept");
+            },
+            onCancel: (){
+              // status
+              // accept , reject , pending
+              ///
+              /// set to reject
+              changeStatus(context , "reject");
+            }
+          );
+        },
+      ),
+    ) : SizedBox();
+  }
+
+  void changeStatus(BuildContext context ,newStatus ) {
+    Provider.of<OpportunityProvider>(context, listen: false).changeStatus(
+        apply_opportunity_id: widget.applyOpportunityID!,
+        newStatus: newStatus,
+        callBack: (){
+          EasyLoading.showSuccess("The opportunity status has been successfully changed");
+          Provider.of<OpportunityProvider>(context, listen: false).getStatus(opportunity_id: widget.opportunity!.id, callBack: (String? status){
+            if(status != null){
+              opportunityStatus = status ;
+              setState(() {});
+            }
+          });
+        });
   }
 
   void rateOpportunity(BuildContext context , double rate) {

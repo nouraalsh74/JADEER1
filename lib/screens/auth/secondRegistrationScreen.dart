@@ -115,6 +115,7 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
               SizedBox(height: size_H(40),),
               /// Education
               MyBtnSelector(
+                isRequired: true,
                 // controller: TextEditingController(),
                 title: "Education",
                 hint: "Add Education",
@@ -175,6 +176,7 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
 
               /// Skills
               MyBtnSelector(
+                isRequired: true,
                 // controller: TextEditingController(),
                 title: "Skills",
                 hint: "Add Skill",
@@ -343,6 +345,7 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
               ),
 
               MyBtnSelector(
+                isRequired: true,
                 // controller: TextEditingController(),
                 title: "Interests",
                 hint: "Add Interests",
@@ -396,6 +399,7 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
               Column(
                 children: [
                   MyBtnSelector(
+                    isRequired: true,
                     // controller: TextEditingController(),
                     title: "Upload CV",
                     hint: "Browse file",

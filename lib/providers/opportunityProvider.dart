@@ -124,6 +124,7 @@ class OpportunityProvider with ChangeNotifier{
                     : null,
                 dateOfBirth: document.data().toString().contains('date_of_birth') ? document.get('date_of_birth') : null,
                 lastName: document.data().toString().contains('last_name') ? document.get('last_name') : null,
+                applyOpportunityID: document.data().toString().contains('apply_id') ? document.get('apply_id') : null,
                 experience: document.data().toString().contains('experience') && document.get('experience') != null
                     ? Experience.fromJson(document.get('experience'))
                     : null,
@@ -242,6 +243,37 @@ class OpportunityProvider with ChangeNotifier{
     }
     print("isAppliedD ${isAppliedD}");
     callBack(isAppliedD);
+  }
+  getStatus({required String opportunity_id , required Function(String? status) callBack}) async {
+    final UID = FirebaseAuth.instance.currentUser!.uid;
+    String? status ;
+    final data = await FirebaseFirestore.instance
+        .collection('apply_opportunities')
+        .where("user_id", isEqualTo: UID)
+        .get();
+    for (var Category in data.docs) {
+      final data = MyAppliedOpportunity.fromJson(Category.data());
+      if(data.opportunity!.id == opportunity_id){
+        status = data.status ;
+        break ;
+      }
+      //
+    }
+
+    callBack(status);
+  }
+
+  Future changeStatus({required String apply_opportunity_id ,required String newStatus ,  required Function() callBack}) async {
+    try{
+      await FirebaseFirestore.instance.collection('apply_opportunities').doc(apply_opportunity_id).update({
+        'status': newStatus,
+      }).then((value) {
+        callBack();
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error entering data: $e');
+    }
   }
 
   Future applyOpportunity({required Map<String, dynamic> opportunityData , required Function callBack}) async {

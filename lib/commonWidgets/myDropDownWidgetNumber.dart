@@ -40,7 +40,7 @@ class _MyDropDownWidgetNumberState extends State<MyDropDownWidgetNumber> {
             ),
             child: Center(
               child:  IgnorePointer(
-    ignoring: !widget.isEditable!,
+                ignoring: !widget.isEditable!,
                 child: DropdownButton<int>(
 
                   borderRadius: BorderRadius.circular(15.0),

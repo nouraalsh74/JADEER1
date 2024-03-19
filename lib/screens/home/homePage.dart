@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Hi ${userProfile!.firstName} ${userProfile!.lastName}", style: ourTextStyle(fontSize: 18 , color: Theme_Information.Primary_Color , fontWeight: FontWeight.w500)),
-                        Text("Good Morning", style: ourTextStyle( fontWeight: FontWeight.w500)),
+                        // Text("Good Morning", style: ourTextStyle( fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),

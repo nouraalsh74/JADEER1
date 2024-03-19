@@ -5,11 +5,12 @@ import '../models/generalListFireBase.dart';
 
 class MyDropDownWidget extends StatefulWidget {
   MyDropDownWidget(
-      {Key? key, required this.listOfData, this.title,required this.callBack, required this.selectedValue , this.isEditable = true})
+      {Key? key, required this.listOfData, this.title,required this.callBack, required this.selectedValue , this.isEditable = true, this.isRequired = true})
       : super(key: key);
   late GeneralFireBaseList? selectedValue ;
   final String? title ;
   final bool? isEditable ;
+  final bool  isRequired ;
   final Function(GeneralFireBaseList? newValue)? callBack ;
   final List<GeneralFireBaseList>? listOfData ;
 
@@ -25,11 +26,17 @@ class _MyDropDownWidgetState extends State<MyDropDownWidget> {
       padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
       child: Column(
         children: [
-            Padding(
-            padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
-            child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(widget.title??"", style: ourTextStyle(color: Theme_Information.Primary_Color))),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0 , left: 8.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text("${widget.title}", style: ourTextStyle(color: Theme_Information.Primary_Color))),
+              ),
+              if(widget.isRequired)
+                Text("*" , style: ourTextStyle(color: Theme_Information.Color_10 , fontSize: 15),)
+            ],
           ),
           SizedBox(height: size_H(10),),
           Container(
