@@ -7,6 +7,7 @@ class MyAppliedOpportunity {
   String? cvPath;
   List<Education>? education;
   String? dateOfBirth;
+  String? dateApply;
   String? status;
   String? lastName;
   Experience? experience;
@@ -25,6 +26,7 @@ class MyAppliedOpportunity {
   MyAppliedOpportunity({
     required this.id,
     this.cvPath,
+    this.dateApply,
     this.education,
     this.dateOfBirth,
     this.lastName,
@@ -47,6 +49,7 @@ class MyAppliedOpportunity {
   factory MyAppliedOpportunity.fromJson(Map<String, dynamic> json) {
     return MyAppliedOpportunity(
       id: json['ID'] ?? '',
+      dateApply: json['date_apply'] ?? '',
       cvPath: json['cv_path'],
       applyOpportunityID: json['apply_id'],
       education: (json['education'] as List<dynamic>?)
@@ -85,6 +88,7 @@ class MyAppliedOpportunity {
     return {
       "ID": id,
       if(cvPath != null)"cv_path": cvPath,
+      if(dateApply != null)"date_apply": dateApply,
       if(education != null)"education": education == null ? [] : List<dynamic>.from(education!.map((x) => x.toJson())),
       if(dateOfBirth != null)"date_of_birth": dateOfBirth,
       if(lastName != null) "last_name": lastName,

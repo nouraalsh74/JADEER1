@@ -36,7 +36,6 @@ class _MyApplyOpportunityState extends State<MyApplyOpportunity> {
 
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
-      // opportunities.clear();
       myApplyOpportunity.clear();
       await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , myApplyOpportunity);
       _filteredOpportunities = myApplyOpportunity ;

@@ -12,6 +12,7 @@ class Theme_Information {
   static Color Primary_Color  = Color(0xff01297F); // like pink
   static Color Second_Color  = Color(0xff0098D9);  // like blue
   static Color Third_Color  = Color(0xffB8EAF1);  // like blue
+  static Color Gray_Color  = Color(0xff7487B3);  // like blue
 
   // static Color Button_Color  = Color(0xff5D81DE);
   // static Color Button_Color2  = Color(0xff439CB8);

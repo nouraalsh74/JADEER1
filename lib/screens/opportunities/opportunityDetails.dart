@@ -43,8 +43,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
       Courses(id: "1" , title: "Microsoft Power BI Data Analyst Professional" , source: "coursera" , image: "https://cdn.icon-icons.com/icons2/2699/PNG/512/coursera_logo_icon_170320.png"  ),
       Courses(id: "2" , title: "Data Analysis with Pandas and Python" , source: "Udemy" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Udemy_logo.svg/2560px-Udemy_logo.svg.png"  ),
       Courses(id: "3" , title: "Professional Certificate in Data analyst" , source: "edX" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/EdX_newer_logo.svg/2560px-EdX_newer_logo.svg.png"  ),
-    ]
-    );
+    ]);
     Provider.of<OpportunityProvider>(context, listen: false).getRate(opportunity_id: widget.opportunity!.id, callBack: (double? rate){
       if(rate != null){
         myRate = rate ;
@@ -58,7 +57,6 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         if(isApplied != null && isApplied == true){
           Provider.of<OpportunityProvider>(context, listen: false).getStatus(opportunity_id: widget.opportunity!.id, callBack: (String? status){
             if(status != null){
-              print("status ${status}");
               opportunityStatus = status ;
               setState(() {});
             }
@@ -588,6 +586,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         callBack: (){
           EasyLoading.showSuccess("The opportunity status has been successfully changed");
           Provider.of<OpportunityProvider>(context, listen: false).getStatus(opportunity_id: widget.opportunity!.id, callBack: (String? status){
+
             if(status != null){
               opportunityStatus = status ;
               setState(() {});

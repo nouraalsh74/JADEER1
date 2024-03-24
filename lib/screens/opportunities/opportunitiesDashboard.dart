@@ -53,12 +53,15 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       opportunitiesBase = opportunities ;
       allChips.add(GeneralFireBaseList(id: "00" , name: "All"));
       await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("specialties_for_opportunities" , allChips);
+
+      await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , Provider.of<OpportunityProvider>(context, listen: false).myAppliedOpportunity);
+
+
       selectedChip = allChips.first ;
       setState(() {});
       EasyLoading.dismiss();
     });
   }
-
 
 
   @override
@@ -67,7 +70,7 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Container(
+          SizedBox(
             height: size_H(250),
             child: Row(
               children: [
@@ -159,7 +162,6 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
               ],
             ),
           ),
-
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -177,7 +179,7 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       ),
     );
   }
-  Padding opportunityItem({required Opportunity opportunity}) {
+  Padding opportunityItem({required Opportunity opportunity }) {
     return Padding(
       padding: const EdgeInsets.only(left: 15  , right: 15 , bottom: 5),
       child: GestureDetector(
@@ -258,7 +260,12 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
 
                       SizedBox(height: size_H(5),),
 
+                      if(!isApplied(opportunity))
                       Text("• Not Applied" , style: TextStyle(color: Theme_Information.Color_7 , fontSize: 9),),
+
+                      if(isApplied(opportunity))
+                        Text("* Applied" , style: ourTextStyle(fontSize: 10 , color: Theme_Information.Color_12),),
+
 
                     ],
                   ),
@@ -272,9 +279,9 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
     );
   }
 
+
   bool isSaved(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: false).isOpportunitySaved(opportunity: opportunity) == true;
-
-
+  bool isApplied(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: false).isOpportunityApplied(opportunity: opportunity) == true;
 
 
 

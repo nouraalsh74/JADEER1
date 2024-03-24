@@ -37,6 +37,11 @@ class ImagePath {
   static String empty_heart = "assets/images/empty_heart.png" ;
   static String fill_heart = "assets/images/fill_heart.png" ;
   static String share = "assets/images/share.png" ;
+  static String rejectedIcon = "assets/images/rejectedIcon.png" ;
+  static String approvedIcon = "assets/images/approvedIcon.png" ;
+  static String document = "assets/images/document.png" ;
+  static String successfulApplicationIcon = "assets/images/successfulApplicationIcon.png" ;
+  static String mostSuggestedIndustries = "assets/images/mostSuggestedIndustries.png" ;
 
 }
 

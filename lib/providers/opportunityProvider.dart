@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/providers/userProvider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/myOpportunityModel.dart';
@@ -16,11 +17,18 @@ class OpportunityProvider with ChangeNotifier{
   // notifyListeners();
   List<Opportunity> opportunityList = [] ;
   List<SavedOpportunity> savedOpportunityList = [] ;
-  // List<MyAppliedOpportunity> myAppliedOpportunity = [] ;
+  List<MyAppliedOpportunity> myAppliedOpportunity = [] ;
 
 
   bool? isOpportunitySaved({required Opportunity opportunity}){
     final itemIndex =  savedOpportunityList.indexWhere((element) => element.opportunity == opportunity);
+    if(itemIndex != -1){
+      return true ;
+    }
+    return false ;
+  }
+  bool? isOpportunityApplied({required Opportunity opportunity}){
+    final itemIndex =  myAppliedOpportunity.indexWhere((element) => element.opportunity!.id == opportunity.id);
     if(itemIndex != -1){
       return true ;
     }
@@ -105,6 +113,135 @@ class OpportunityProvider with ChangeNotifier{
 
   }
 
+  bool checkDateInCurrentMonth(String dateStr) {
+    DateTime date = DateTime.parse(DateFormat("dd/MM/yyyy").parse(dateStr).toString());
+    DateTime now = DateTime.now();
+    return date.month == now.month && date.year == now.year;
+  }
+
+  bool checkDateInLastMonth(String dateStr) {
+    DateTime date = DateFormat("dd/MM/yyyy").parse(dateStr);
+    DateTime now = DateTime.now();
+    DateTime firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
+    DateTime lastDayOfLastMonth = DateTime(now.year, now.month, 0);
+    return date.isAfter(firstDayOfLastMonth.subtract(Duration(days: 1))) &&
+        date.isBefore(lastDayOfLastMonth.add(Duration(days: 1)));
+  }
+
+  Future fetchDataFromFirestoreMyOpportunityThisMonth(String collectionName , List<MyAppliedOpportunity> data) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      QuerySnapshot querySnapshot =
+      await firestore.collection(collectionName)
+          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot document in querySnapshot.docs) {
+          if(!checkDateInCurrentMonth(document.get('date_apply'))){
+            print("From Last Month");
+          } else {
+            data.add(
+              MyAppliedOpportunity(
+                id: document.data().toString().contains('ID') ? document.get('ID') : '',
+                cvPath: document.data().toString().contains('cv_path') ? document.get('cv_path') : null,
+                dateApply: document.data().toString().contains('date_apply') ? document.get('date_apply') : null,
+                status: document.data().toString().contains('status') ? document.get('status') : null,
+                education: (document.data().toString().contains('education') && document.get('education') != null)
+                    ? List<Education>.from(document.get('education').map((x) => Education.fromJson(x)))
+                    : null,
+                dateOfBirth: document.data().toString().contains('date_of_birth') ? document.get('date_of_birth') : null,
+                lastName: document.data().toString().contains('last_name') ? document.get('last_name') : null,
+                applyOpportunityID: document.data().toString().contains('apply_id') ? document.get('apply_id') : null,
+                experience: document.data().toString().contains('experience') && document.get('experience') != null
+                    ? Experience.fromJson(document.get('experience'))
+                    : null,
+                skills: (document.data().toString().contains('skills') && document.get('skills') != null)
+                    ? List<String>.from(document.get('skills'))
+                    : null,
+                licensesOrCertifications: (document.data().toString().contains('licenses_or_certifications') && document.get('licenses_or_certifications') != null)
+                    ? List<LicensesOrCertification>.from(document.get('licenses_or_certifications').map((x) => LicensesOrCertification.fromJson(x)))
+                    : null,
+                userId: document.data().toString().contains('user_id') ? document.get('user_id') : null,
+                phoneNumber: document.data().toString().contains('phone_number') ? document.get('phone_number') : null,
+                interests: (document.data().toString().contains('interests') && document.get('interests') != null)
+                    ? List<String>.from(document.get('interests'))
+                    : null,
+                firstName: document.data().toString().contains('first_name') ? document.get('first_name') : null,
+                email: document.data().toString().contains('email') ? document.get('email') : null,
+                countryId: document.data().toString().contains('country_id') ? document.get('country_id') : null,
+                cityId: document.data().toString().contains('city_id') ? document.get('city_id') : null,
+                opportunity: document.data().toString().contains('opportunity') && document.get('opportunity') != null
+                    ? Opportunity.fromJson(document.get('opportunity'))
+                    : null,
+              ),
+            );
+          }
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future fetchDataFromFirestoreMyOpportunityLastMonth(String collectionName , List<MyAppliedOpportunity> data) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      QuerySnapshot querySnapshot =
+      await firestore.collection(collectionName)
+          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot document in querySnapshot.docs) {
+          if(!checkDateInLastMonth(document.get('date_apply'))){
+            print("From Last Month");
+          } else {
+            data.add(
+              MyAppliedOpportunity(
+                id: document.data().toString().contains('ID') ? document.get('ID') : '',
+                cvPath: document.data().toString().contains('cv_path') ? document.get('cv_path') : null,
+                dateApply: document.data().toString().contains('date_apply') ? document.get('date_apply') : null,
+                status: document.data().toString().contains('status') ? document.get('status') : null,
+                education: (document.data().toString().contains('education') && document.get('education') != null)
+                    ? List<Education>.from(document.get('education').map((x) => Education.fromJson(x)))
+                    : null,
+                dateOfBirth: document.data().toString().contains('date_of_birth') ? document.get('date_of_birth') : null,
+                lastName: document.data().toString().contains('last_name') ? document.get('last_name') : null,
+                applyOpportunityID: document.data().toString().contains('apply_id') ? document.get('apply_id') : null,
+                experience: document.data().toString().contains('experience') && document.get('experience') != null
+                    ? Experience.fromJson(document.get('experience'))
+                    : null,
+                skills: (document.data().toString().contains('skills') && document.get('skills') != null)
+                    ? List<String>.from(document.get('skills'))
+                    : null,
+                licensesOrCertifications: (document.data().toString().contains('licenses_or_certifications') && document.get('licenses_or_certifications') != null)
+                    ? List<LicensesOrCertification>.from(document.get('licenses_or_certifications').map((x) => LicensesOrCertification.fromJson(x)))
+                    : null,
+                userId: document.data().toString().contains('user_id') ? document.get('user_id') : null,
+                phoneNumber: document.data().toString().contains('phone_number') ? document.get('phone_number') : null,
+                interests: (document.data().toString().contains('interests') && document.get('interests') != null)
+                    ? List<String>.from(document.get('interests'))
+                    : null,
+                firstName: document.data().toString().contains('first_name') ? document.get('first_name') : null,
+                email: document.data().toString().contains('email') ? document.get('email') : null,
+                countryId: document.data().toString().contains('country_id') ? document.get('country_id') : null,
+                cityId: document.data().toString().contains('city_id') ? document.get('city_id') : null,
+                opportunity: document.data().toString().contains('opportunity') && document.get('opportunity') != null
+                    ? Opportunity.fromJson(document.get('opportunity'))
+                    : null,
+              ),
+            );
+          }
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
   Future fetchDataFromFirestoreMyOpportunity(String collectionName , List<MyAppliedOpportunity> data) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     try {
@@ -118,7 +255,9 @@ class OpportunityProvider with ChangeNotifier{
           data.add(
               MyAppliedOpportunity(
                 id: document.data().toString().contains('ID') ? document.get('ID') : '',
+                dateApply: document.data().toString().contains('date_apply') ? document.get('date_apply') : null,
                 cvPath: document.data().toString().contains('cv_path') ? document.get('cv_path') : null,
+                status: document.data().toString().contains('status') ? document.get('status') : null,
                 education: (document.data().toString().contains('education') && document.get('education') != null)
                     ? List<Education>.from(document.get('education').map((x) => Education.fromJson(x)))
                     : null,
@@ -239,7 +378,6 @@ class OpportunityProvider with ChangeNotifier{
         isAppliedD = true ;
         break ;
       }
-      //
     }
     print("isAppliedD ${isAppliedD}");
     callBack(isAppliedD);
@@ -255,6 +393,7 @@ class OpportunityProvider with ChangeNotifier{
       final data = MyAppliedOpportunity.fromJson(Category.data());
       if(data.opportunity!.id == opportunity_id){
         status = data.status ;
+        callBack(status);
         break ;
       }
       //
@@ -294,6 +433,8 @@ class OpportunityProvider with ChangeNotifier{
       'experience': opportunityData['experience'], // assuming it's a map
       'cv_path': opportunityData['cv_path'],
       'licenses_or_certifications': opportunityData['licenses_or_certifications'],
+      'date_apply': opportunityData['date_apply'],
+      'status': opportunityData['status'],
       'opportunity': opportunityData['opportunity'],
     }).then((value) async {
       print("Done ${value.id}");

@@ -11,6 +11,7 @@ import 'package:flutter_application_2/screens/auth/registeredSuccessfullyPage.da
 import 'package:flutter_application_2/screens/auth/skillFormPage.dart';
 import 'package:flutter_application_2/screens/opportunities/personalInformationForm.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_btn/loading_btn.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -789,10 +790,12 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                               String downloadUrl = await Provider.of<UserProvider>(context , listen: false).uploadFile(filePathCV! , FirebaseAuth.instance.currentUser!.uid);
                                               userProfile.cvPath = downloadUrl ;
                                             }
-
+                                            DateTime dateTime = DateTime.now();
+                                            String formattedDate = DateFormat('dd/M/yyyy').format(dateTime);
                                             Map<String, dynamic> userData = userProfile.toJson();
                                             userData.addAll({
                                               "opportunity": widget.opportunity?.toMap(),
+                                              "date_apply": formattedDate,
                                               "status": "pending"
                                             });
                                             EasyLoading.show();

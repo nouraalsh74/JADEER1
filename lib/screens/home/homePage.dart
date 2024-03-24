@@ -12,6 +12,7 @@ import '../../models/userProfileModel.dart';
 import '../../providers/drawerProvider.dart';
 import '../../providers/userProvider.dart';
 import '../mentors/mentorsDashBoard.dart';
+import '../myActivity/myActivityDashboard.dart';
 import '../opportunities/myApplyOpportunity.dart';
 import '../opportunities/opportunitiesDashboard.dart';
 import '../opportunities/savedopportunities.dart';
@@ -109,7 +110,10 @@ class _HomePageState extends State<HomePage> {
                               print("1");
                               Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => MyApplyOpportunity()));
                             }),
-                            HomePageItem(text: "View your activity", callBack: (){print("2");}),
+                            HomePageItem(text: "View your activity", callBack: (){
+                              print("2");
+                              Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => MyActivityDashboard()));
+                            }),
                           ],
                         ),
 
