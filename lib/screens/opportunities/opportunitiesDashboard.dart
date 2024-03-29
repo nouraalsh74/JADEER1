@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,19 +24,60 @@ class OpportunitiesDashboard extends StatefulWidget {
 }
 
 class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
+  TextEditingController _searchController = TextEditingController();
 
-  // List<String> allChips = ['All', 'HR', 'Accounting', 'Information Systems'];
-  List<GeneralFireBaseList> allChips = [];
-  GeneralFireBaseList? selectedChip ;
+  /// Industry
+  List<GeneralFireBaseList> allIndustryChips = [];
+  GeneralFireBaseList? selectedIndustryChip ;
+
+  /// Location
+  List<GeneralFireBaseList> allLocationChips = [];
+  GeneralFireBaseList? selectedLocationChip ;
+
+
+  /// Opportunity type
+  List<GeneralFireBaseList> allOpportunityTypeChips = [];
+  GeneralFireBaseList? selectedOpportunityTypeChip ;
+
+
+  /// Availability
+  List<GeneralFireBaseList> allAvailabilityChips = [];
+  GeneralFireBaseList? selectedAvailabilityChip ;
+
+  
 
   List<Opportunity> opportunities = [];
   List<Opportunity> opportunitiesBase = [];
 
-  List<Opportunity> filterMentorsByMajor(GeneralFireBaseList industry) {
-    if (industry.name == 'All') {
+  List<Opportunity> filterOpportunitiesByIndustry(GeneralFireBaseList selectedItem) {
+    if (selectedItem.name == 'All') {
       return opportunitiesBase; // Return all mentors if 'All' chip is selected
     } else {
-      return opportunitiesBase.where((opportunity) => opportunity.industry == industry.name).toList();
+      return opportunitiesBase.where((opportunity) => opportunity.industry == selectedItem.name).toList();
+    }
+  }
+  
+  List<Opportunity> filterOpportunitiesByLocation(GeneralFireBaseList selectedItem) {
+    if (selectedItem.name == 'All') {
+      return opportunitiesBase; // Return all mentors if 'All' chip is selected
+    } else {
+      return opportunitiesBase.where((opportunity) => opportunity.location == selectedItem.name).toList();
+    }
+  }
+
+  List<Opportunity> filterOpportunitiesByOpportunityType(GeneralFireBaseList selectedItem) {
+    if (selectedItem.name == 'All') {
+      return opportunitiesBase; // Return all mentors if 'All' chip is selected
+    } else {
+      return opportunitiesBase.where((opportunity) => opportunity.opportunity_type.contains(selectedItem.name!)).toList();
+    }
+  }
+
+  List<Opportunity> filterOpportunitiesByAvailability(GeneralFireBaseList selectedItem) {
+    if (selectedItem.name == 'All') {
+      return opportunitiesBase; // Return all mentors if 'All' chip is selected
+    } else {
+      return opportunitiesBase.where((opportunity) => opportunity.availability.contains(selectedItem.name!)).toList();
     }
   }
 
@@ -51,15 +95,60 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       opportunities.clear();
       opportunities = Provider.of<OpportunityProvider>(context, listen: false).opportunityList ;
       opportunitiesBase = opportunities ;
-      allChips.add(GeneralFireBaseList(id: "00" , name: "All"));
-      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("specialties_for_opportunities" , allChips);
-
       await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , Provider.of<OpportunityProvider>(context, listen: false).myAppliedOpportunity);
 
+      /// Industry
+      allIndustryChips.add(GeneralFireBaseList(id: "00" , name: "All"));
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("specialties_for_mentors" , allIndustryChips);
+      selectedIndustryChip = allIndustryChips.first ;
 
-      selectedChip = allChips.first ;
+      /// Location
+      allLocationChips.add(GeneralFireBaseList(id: "00" , name: "All"));
+      await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("cities" , allLocationChips);
+      selectedLocationChip = allLocationChips.first ;
+      
+      
+      /// Availability
+      allAvailabilityChips.add(GeneralFireBaseList(id: "00" , name: "All"));
+      allAvailabilityChips.add(GeneralFireBaseList(id: "01" , name: "Full-time"));
+      allAvailabilityChips.add(GeneralFireBaseList(id: "02" , name: "Part-time"));
+      selectedAvailabilityChip = allAvailabilityChips.first ;
+
+
+      /// Opportunity Type
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "00" , name: "All"));
+      opportunities.forEach((item) {
+        String opportunityType = item.opportunity_type;
+        bool exists = allOpportunityTypeChips.any((element) => element.name == opportunityType);
+        if (!exists) {
+          String randomId = _generateRandomId();
+          allOpportunityTypeChips.add(GeneralFireBaseList(id: randomId, name: opportunityType));
+        }
+      });
+      selectedOpportunityTypeChip = allOpportunityTypeChips.first ;
+
+
+
+
       setState(() {});
       EasyLoading.dismiss();
+    });
+  }
+
+
+  String _generateRandomId() {
+    var random = Random();
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return String.fromCharCodes(Iterable.generate(10, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+
+
+  void _filterOpportunities(String searchText) {
+    setState(() {
+      opportunities = opportunitiesBase
+          .where((opportunity) =>
+      opportunity.title.toLowerCase().contains(searchText.toLowerCase()) ?? false)
+          .toList();
     });
   }
 
@@ -71,13 +160,13 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
         mainAxisSize: MainAxisSize.max,
         children: [
           SizedBox(
-            height: size_H(250),
+            height: size_H(280),
             child: Row(
               children: [
                 Expanded(
                   child: Stack(
                     children: [
-                      Image.asset(ImagePath.mentorsBackground ,height:  size_H(250) , scale: 3 , fit: BoxFit.fill , width: MediaQuery.of(context).size.width),
+                      Image.asset(ImagePath.mentorsBackground ,height:  size_H(280) , scale: 3 , fit: BoxFit.fill , width: MediaQuery.of(context).size.width),
 
                       Positioned.fill(
                         top: size_H(20),
@@ -104,53 +193,44 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
                                 ],
                               ),
 
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 15.0 , left: 15 , right: 15 , top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 2.0),
-                                      child: Text("Industries" , style: ourTextStyle(fontSize: 12 , color: Theme_Information.Color_1),),
-                                    ),
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: allChips.map((chip) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(right: 2.0 , left: 2.0),
-                                            child: ChoiceChip(
-                                              elevation: 0 ,
-                                              backgroundColor: selectedChip == chip
-                                                  ? Theme_Information.Color_1
-                                                  : Theme_Information.Primary_Color,
-                                              labelStyle: ourTextStyle(
-                                                  fontSize: 12,
-                                                  color: selectedChip == chip
-                                                      ? Theme_Information.Primary_Color
-                                                      : Theme_Information.Color_1
-                                              ),
-                                              label: Text("${chip.name}"),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(25.0),
-                                                side: BorderSide.none,
-                                              ),
-                                              selected: selectedChip == chip,
-                                              onSelected: (selected) {
-                                                setState(() {
-                                                  selectedChip = selected ? chip : allChips.first;
-                                                  // selectedChip = selected ? chip : 'All';
-                                                  opportunities = filterMentorsByMajor(selectedChip!);
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        }).toList(),
+                              SizedBox(height: size_H(10),),
+                              Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme_Information.Color_1,
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  width: MediaQuery.of(context).size.width * 0.9,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: TextFormField(
+                                      controller: _searchController,
+                                      onChanged: _filterOpportunities,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Search...',
+                                        border: InputBorder.none, // Removes the default underline
+                                        suffixIcon: Icon(Icons.search),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              )
+                              ),
+
+
+                              Padding(
+                                padding: const EdgeInsets.only( left: 10 , right: 10),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      locationFilter(context),
+                                      industryFilter(context),
+                                      opportunityTypeFilter(context),
+                                      availabilityTypeFilter(context),
+                                    ],
+                                  ),
+                                ),
+                              ),
 
                             ],
                           ),
@@ -164,11 +244,15 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(opportunities.length, (index) {
-                  final item = opportunities[index];
-                  return opportunityItem(opportunity: item);
-                }),
+              child: Builder(
+                builder: (context) {
+                  return Column(
+                    children: List.generate(opportunities.length, (index) {
+                      final item = opportunities[index];
+                      return opportunityItem(opportunity: item);
+                    }),
+                  );
+                }
               ),
             ),
           )
@@ -179,6 +263,293 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       ),
     );
   }
+
+  Padding industryFilter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top:8.0 , bottom: 8 , left: 5 , right: 5),
+      child: InkWell(
+        onTap: () {
+          _showBottomSheet(
+              context: context,
+              setStateB: setState,
+              title: "Choose a Industry",
+              allChips: allIndustryChips,
+              selectedChip: selectedIndustryChip,
+              callBack: (selected , selectedItem) {
+                selectedIndustryChip = selected ? selectedItem : allIndustryChips.first;
+                opportunities = filterOpportunitiesByIndustry(selectedIndustryChip!);
+              });
+        },
+        child: Chip(
+          elevation: 0,
+          avatar: selectedIndustryChip != null &&
+                  selectedIndustryChip != allIndustryChips.first
+              ? Icon(Icons.check, color: Theme_Information.Primary_Color)
+              : Icon(Icons.add, color: Theme_Information.Color_1),
+          backgroundColor: selectedIndustryChip != null &&
+                  selectedIndustryChip != allIndustryChips.first
+              ? Theme_Information.Color_1
+              : Theme_Information.Primary_Color,
+          labelStyle: ourTextStyle(
+              fontSize: 12,
+              color: selectedIndustryChip != null &&
+                      selectedIndustryChip != allIndustryChips.first
+                  ? Theme_Information.Primary_Color
+                  : Theme_Information.Color_1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide.none,
+          ),
+          label: Text(
+            filterLabel(
+                title: "Industry",
+                allData: allIndustryChips,
+                selectedChip: selectedIndustryChip),
+            // style: ourTextStyle(),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Padding opportunityTypeFilter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top:8.0 , bottom: 8 , left: 5 , right: 5),
+      child: InkWell(
+        onTap: () {
+          _showBottomSheet(
+              context: context,
+              setStateB: setState,
+              title: "Choose a Opportunity type",
+              allChips: allOpportunityTypeChips,
+              selectedChip: selectedOpportunityTypeChip,
+              callBack: (selected , selectedItem) {
+                selectedOpportunityTypeChip = selected ? selectedItem : allOpportunityTypeChips.first;
+                opportunities = filterOpportunitiesByOpportunityType(selectedOpportunityTypeChip!);
+              });
+        },
+        child: Chip(
+          elevation: 0,
+          avatar: selectedOpportunityTypeChip != null &&
+                  selectedOpportunityTypeChip != allOpportunityTypeChips.first
+              ? Icon(Icons.check, color: Theme_Information.Primary_Color)
+              : Icon(Icons.add, color: Theme_Information.Color_1),
+          backgroundColor: selectedOpportunityTypeChip != null &&
+                  selectedOpportunityTypeChip != allOpportunityTypeChips.first
+              ? Theme_Information.Color_1
+              : Theme_Information.Primary_Color,
+          labelStyle: ourTextStyle(
+              fontSize: 12,
+              color: selectedOpportunityTypeChip != null &&
+                      selectedOpportunityTypeChip != allOpportunityTypeChips.first
+                  ? Theme_Information.Primary_Color
+                  : Theme_Information.Color_1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide.none,
+          ),
+          label: Text(
+            filterLabel(
+                title: "Opportunity type",
+                allData: allOpportunityTypeChips,
+                selectedChip: selectedOpportunityTypeChip),
+            // style: ourTextStyle(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding availabilityTypeFilter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top:8.0 , bottom: 8 , left: 5 , right: 5),
+      child: InkWell(
+        onTap: () {
+          _showBottomSheet(
+              context: context,
+              setStateB: setState,
+              title: "Choose a Availability",
+              allChips: allAvailabilityChips,
+              selectedChip: selectedAvailabilityChip,
+              callBack: (selected , selectedItem) {
+                selectedAvailabilityChip = selected ? selectedItem : allAvailabilityChips.first;
+                opportunities = filterOpportunitiesByAvailability(selectedAvailabilityChip!);
+              });
+        },
+        child: Chip(
+          elevation: 0,
+          avatar: selectedAvailabilityChip != null &&
+              selectedAvailabilityChip != allAvailabilityChips.first
+              ? Icon(Icons.check, color: Theme_Information.Primary_Color)
+              : Icon(Icons.add, color: Theme_Information.Color_1),
+          backgroundColor: selectedAvailabilityChip != null &&
+              selectedAvailabilityChip != allAvailabilityChips.first
+              ? Theme_Information.Color_1
+              : Theme_Information.Primary_Color,
+          labelStyle: ourTextStyle(
+              fontSize: 12,
+              color: selectedAvailabilityChip != null &&
+                  selectedAvailabilityChip != allAvailabilityChips.first
+                  ? Theme_Information.Primary_Color
+                  : Theme_Information.Color_1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide.none,
+          ),
+          label: Text(
+            filterLabel(
+                title: "Availability",
+                allData: allAvailabilityChips,
+                selectedChip: selectedAvailabilityChip),
+            // style: ourTextStyle(),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Padding locationFilter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top:8.0 , bottom: 8 , left: 5 , right: 5),
+      child: InkWell(
+        onTap: () {
+          _showBottomSheet(
+              context: context,
+              setStateB: setState,
+              title: "Choose a Location",
+              allChips: allLocationChips,
+              selectedChip: selectedLocationChip,
+              callBack: (selected , selectedItem) {
+                selectedLocationChip = selected ? selectedItem : allLocationChips.first;
+                opportunities = filterOpportunitiesByLocation(selectedLocationChip!);
+                print("opportunities ${opportunities.length}");
+              });
+        },
+        child: Chip(
+          elevation: 0,
+          avatar: selectedLocationChip != null &&
+                  selectedLocationChip != allLocationChips.first
+              ? Icon(Icons.check, color: Theme_Information.Primary_Color)
+              : Icon(Icons.add, color: Theme_Information.Color_1),
+          backgroundColor: selectedLocationChip != null &&
+                  selectedLocationChip != allLocationChips.first
+              ? Theme_Information.Color_1
+              : Theme_Information.Primary_Color,
+          labelStyle: ourTextStyle(
+              fontSize: 12,
+              color: selectedLocationChip != null &&
+                      selectedLocationChip != allLocationChips.first
+                  ? Theme_Information.Primary_Color
+                  : Theme_Information.Color_1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide.none,
+          ),
+          label: Text(
+            filterLabel(
+                title: "Location",
+                allData: allLocationChips,
+                selectedChip: selectedLocationChip),
+            // style: ourTextStyle(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String filterLabel(
+      {GeneralFireBaseList? selectedChip,
+      required List<GeneralFireBaseList> allData,
+        required String title}) {
+    if(selectedChip == null || selectedChip == allData.first ){
+      return title ;
+    } else{
+      return selectedChip.name ?? title ;
+    }
+  }
+
+
+  void _showBottomSheet({required BuildContext context ,required StateSetter setStateB ,
+    required Function(bool selected ,GeneralFireBaseList selectedItem) callBack ,
+    required String title,
+    required List<GeneralFireBaseList> allChips,
+    required GeneralFireBaseList? selectedChip
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme_Information.Primary_Color,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: size_H(300),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: size_H(10),),
+                    Text("$title", style: ourTextStyle(color: Theme_Information.Color_1 , fontSize: 17),),
+                    SizedBox(height: size_H(5),),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 15.0 , left: 15),
+                      child: Divider(),
+                    ),
+                    SizedBox(height: size_H(5),),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: allChips.map((selectedItem) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: ChoiceChip(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  side: BorderSide.none,
+                                ),
+                                elevation: 0 ,
+                                backgroundColor: selectedChip == selectedItem
+                                    ? Theme_Information.Color_1
+                                    : Theme_Information.Primary_Color,
+                                labelStyle: ourTextStyle(
+                                    fontSize: 12,
+                                    color: selectedChip == selectedItem
+                                        ? Theme_Information.Primary_Color
+                                        : Theme_Information.Color_1
+                                ),
+                                label: Text("${selectedItem.name}"  ),
+                                selected: selectedChip == selectedItem,
+                                onSelected: (bool selected) {
+                                setState(() {
+                                  setStateB(() {
+                                    selectedChip = selected ? selectedItem : allChips.first;
+                                    callBack(selected , selectedItem);
+                                  });
+                                });
+                      
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        );
+      },
+    );
+  }
+  
+
+
+
   Padding opportunityItem({required Opportunity opportunity }) {
     return Padding(
       padding: const EdgeInsets.only(left: 15  , right: 15 , bottom: 5),
