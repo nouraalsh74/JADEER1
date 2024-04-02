@@ -117,14 +117,13 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
 
       /// Opportunity Type
       allOpportunityTypeChips.add(GeneralFireBaseList(id: "00" , name: "All"));
-      opportunities.forEach((item) {
-        String opportunityType = item.opportunity_type;
-        bool exists = allOpportunityTypeChips.any((element) => element.name == opportunityType);
-        if (!exists) {
-          String randomId = _generateRandomId();
-          allOpportunityTypeChips.add(GeneralFireBaseList(id: randomId, name: opportunityType));
-        }
-      });
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "01" , name: "Internship"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "02" , name: "Co-op"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "03" , name: "Volunteer"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "04" , name: "Fresh graduate"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "05" , name: "Intern"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "06" , name: "Summer internship"));
+
       selectedOpportunityTypeChip = allOpportunityTypeChips.first ;
 
 
@@ -196,6 +195,7 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
                               SizedBox(height: size_H(10),),
                               Center(
                                 child: Container(
+                                  height: size_H(45),
                                   decoration: BoxDecoration(
                                     color: Theme_Information.Color_1,
                                     borderRadius: BorderRadius.circular(15.0),

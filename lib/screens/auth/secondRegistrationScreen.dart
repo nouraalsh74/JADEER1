@@ -19,6 +19,7 @@ import '../../commonWidgets/myBtnSelector.dart';
 import '../../commonWidgets/myBtnSelectorExperience.dart';
 import '../../commonWidgets/myConfirmationDialog.dart';
 import '../../commonWidgets/myDropDownWidget.dart';
+import '../../commonWidgets/myDropDownWidget2.dart';
 import '../../commonWidgets/myDropDownWidgetNumber.dart';
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
@@ -264,11 +265,12 @@ class _RegistrationScreenStep2State extends State<RegistrationScreenStep2> {
                     ),
                   ),
 
+
                   Expanded(
                     flex: 4,
                     child: MyDropDownWidget(
                       // controller: _country,
-                      // title: "Field",
+                      title: "Duration",
                       selectedValue: selectedDuration,
                       listOfData: durationList,
                       callBack: (GeneralFireBaseList? newValue){

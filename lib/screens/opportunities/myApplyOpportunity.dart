@@ -95,6 +95,7 @@ class _MyApplyOpportunityState extends State<MyApplyOpportunity> {
                                       ),
                                       SizedBox(height: size_H(10),),
                                       Container(
+                                        height: size_H(45),
                                         decoration: BoxDecoration(
                                           color: Theme_Information.Color_1,
                                           borderRadius: BorderRadius.circular(15.0),

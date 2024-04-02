@@ -10,6 +10,7 @@ import '../providers/drawerProvider.dart';
 import '../screens/auth/welcomeScreen.dart';
 import '../screens/profile/changePasswordPage.dart';
 import '../screens/profile/profilePage.dart';
+import 'myConfirmationDialog.dart';
 
 Widget MyDrawer(context , setState) {
   return Padding(
@@ -56,11 +57,22 @@ Widget MyDrawer(context , setState) {
                     // Handle Help onTap
                   }),
                   buildMenuItem(ImagePath.logout, "Sign out", () async {
+
+                    MyConfirmationDialog().showConfirmationDialog(
+                      context: context,
+                      title: "Confirmation",
+                      body: "Do you want to sign out?",
+                      saveBtn: "Sign out",
+
+                      onSave: () async {
+                        EasyLoading.show();
+                        await FirebaseAuth.instance.signOut();
+                        EasyLoading.dismiss();
+                        Navigator.pushReplacement(context, MyCustomRoute(builder: (BuildContext context) => WelcomeScreen()));
+                      },
+                    );
+
                     // Handle Sign out onTap
-                    EasyLoading.show();
-                    await FirebaseAuth.instance.signOut();
-                    EasyLoading.dismiss();
-                    Navigator.pushReplacement(context, MyCustomRoute(builder: (BuildContext context) => WelcomeScreen()));
 
                   }),
                 ],

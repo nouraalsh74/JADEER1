@@ -194,9 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
               text: "Save",
               callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
 
-                // await Future.delayed(const Duration(seconds: 5));
-                // stopLoading();
-
                 MyConfirmationDialog().showConfirmationDialog(
                   context: context,
                   title: "Confirmation",
@@ -205,80 +202,103 @@ class _ProfilePageState extends State<ProfilePage> {
                   onCancel: (){
                     stopLoading();
                     return ;
-                  },
-                  onSave: () async {
-                    if (btnState == ButtonState.idle) {
-                      startLoading();
-                      Experience userExperience = Experience(
-                        name: '${selectedFieldOfStudy?.name}',
-                        numberOfYear: '${selectedDurationYear}',
-                        durationName: '${selectedDuration?.name}',
-                      );
-
-                      String? uid = FirebaseAuth.instance.currentUser?.uid ;
-                      if(uid != null){
-
-
-
-                        UserProfile userProfile = UserProfile(
-                          firstName: _firstName.text,
-                          lastName: _lastName.text,
-                          id: _id.text,
-                          userId: uid,
-                          email: _email.text,
-                          phoneNumber: _phoneNumber.text,
-                          dateOfBirth: _dateOfBirth.text,
-                          countryId: '${selectedCountry!.id}',
-                          cityId: '${selectedCity!.id}',
-                          education: educations,
-                          skills: skills,
-                          experience: userExperience,
-                          interests: interests,
-                          // cvPath: '',
-                          licensesOrCertifications: licensesOrCertification,
-                        );
-
-                        if(filePathCV != filePathCVBase) {
-                          String downloadUrl = await Provider.of<UserProvider>(context , listen: false).uploadFile(filePathCV! , uid);
-                          userProfile.cvPath = downloadUrl ;
-                        }
-
-                        Map<String, dynamic> userData = userProfile.toJson();
-
-
-
-
-
-                        await Provider.of<UserProvider>(context , listen: false).updateUserData(uid , userData).then((value) async {
-                          if(value != null){
-                            if(value == true){
-
-
-                              Map<String, dynamic>? userData = await Provider.of<UserProvider>(context, listen: false).getUserData(uid);
-                              String jsonString = jsonEncode(userData);
-                              UserProfile userProfile = userProfileFromJson(jsonString);
-                              await Provider.of<UserProvider>(context , listen: false).setUserProfile(userProfile);
-                              stopLoading();
-                              EasyLoading.showSuccess("Profile Updated Successfully");
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          HomePage()),
-                                      (Route<dynamic> route) => false);
+                        },
+                        onSave: () async {
+                          if (btnState == ButtonState.idle) {
+                            if (educations.isEmpty) {
+                              EasyLoading.showError(
+                                  "Please add at least one education");
                               return;
-                            } else{
-                              stopLoading();
+                            } else if (skills.length < 3) {
+                              EasyLoading.showError(
+                                  "Please select at least 3 skill");
+                              return;
+                            } else if (interests.length < 3) {
+                              EasyLoading.showError(
+                                  "Please select at least 3 interest");
+                              return;
+                            } else {
+                              startLoading();
+                              Experience userExperience = Experience(
+                                name: '${selectedFieldOfStudy?.name}',
+                                numberOfYear: '$selectedDurationYear',
+                                durationName: '${selectedDuration?.name}',
+                              );
 
-                              EasyLoading.showError("There is a problem , Please try again");
+                              String? uid =
+                                  FirebaseAuth.instance.currentUser?.uid;
+                              if (uid != null) {
+                                UserProfile userProfile = UserProfile(
+                                  firstName: _firstName.text,
+                                  lastName: _lastName.text,
+                                  id: _id.text,
+                                  userId: uid,
+                                  email: _email.text,
+                                  phoneNumber: _phoneNumber.text,
+                                  dateOfBirth: _dateOfBirth.text,
+                                  countryId: '${selectedCountry!.id}',
+                                  cityId: '${selectedCity!.id}',
+                                  education: educations,
+                                  skills: skills,
+                                  experience: userExperience,
+                                  interests: interests,
+                                  // cvPath: '',
+                                  licensesOrCertifications:
+                                      licensesOrCertification,
+                                );
+
+                                if (filePathCV != filePathCVBase) {
+                                  String downloadUrl =
+                                      await Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .uploadFile(filePathCV!, uid);
+                                  userProfile.cvPath = downloadUrl;
+                                }
+
+                                Map<String, dynamic> userData =
+                                    userProfile.toJson();
+
+                                await Provider.of<UserProvider>(context,
+                                        listen: false)
+                                    .updateUserData(uid, userData)
+                                    .then((value) async {
+                                  if (value != null) {
+                                    if (value == true) {
+                                      Map<String, dynamic>? userData =
+                                          await Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .getUserData(uid);
+                                      String jsonString = jsonEncode(userData);
+                                      UserProfile userProfile =
+                                          userProfileFromJson(jsonString);
+                                      await Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .setUserProfile(userProfile);
+                                      stopLoading();
+                                      EasyLoading.showSuccess(
+                                          "Profile Updated Successfully");
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  HomePage()),
+                                          (Route<dynamic> route) => false);
+                                      Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => ProfilePage()));
+
+                                      return;
+                                    } else {
+                                      stopLoading();
+
+                                      EasyLoading.showError(
+                                          "There is a problem , Please try again");
+                                    }
+                                  }
+                                });
+                              }
                             }
                           }
-                        });
-                      }
-
-
-                    }
-                  },
+                        },
                 );
 
 
@@ -352,6 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyTextForm(
               enabled: isEditable,
               controller: _firstName,
+              isRequired: true,
               title: "First Name",
               hint: "Enter First Name",
               validator: (value) {
@@ -364,6 +385,7 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: size_H(20),),
             /// _lastName
             MyTextForm(
+              isRequired: true,
               enabled: isEditable,
               controller: _lastName,
               title: "Last Name",
@@ -381,6 +403,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyTextForm(
               enabled: isEditable,
               controller: _id,
+              isRequired: true,
               title: "ID",
               hint: "Enter Your ID",
               keyboardType: TextInputType.number,
@@ -399,6 +422,7 @@ class _ProfilePageState extends State<ProfilePage> {
               enabled: isEditable,
               controller: _email,
               title: "Email",
+              isRequired: true,
               keyboardType: TextInputType.emailAddress,
               hint: "Enter Email",
               validator: (value) {
@@ -417,6 +441,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyTextForm(
               enabled: isEditable,
               controller: _phoneNumber,
+              isRequired: true,
               keyboardType: TextInputType.number,
               title: "Phone Number",
               hint: "Enter Phone Number",
@@ -445,6 +470,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 });
               },
               child: MyTextForm(
+                isRequired: true,
                 enabled: false,
                 controller: _dateOfBirth,
                 title: "Date of Birth",
@@ -463,6 +489,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyDropDownWidget(
               isEditable: isEditable,
               // controller: _country,
+              isRequired: true,
               title: "Country",
               selectedValue: selectedCountry,
               listOfData: countryList,
@@ -479,6 +506,7 @@ class _ProfilePageState extends State<ProfilePage> {
               isEditable: isEditable,
               // controller: _country,
               title: "City",
+              isRequired: true,
               selectedValue: selectedCity,
               listOfData: cityList,
               callBack: (GeneralFireBaseList? newValue){
@@ -497,6 +525,7 @@ class _ProfilePageState extends State<ProfilePage> {
               // controller: TextEditingController(),
               title: "Education",
               hint: "Add Education",
+              isRequired: true,
               callback: !isEditable ? (){} : () {
                 // EducationFormPage
                 Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => EducationFormPage())).then((value) {
@@ -556,6 +585,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyBtnSelector(
               // controller: TextEditingController(),
               title: "Skills",
+              isRequired: true,
               hint: "Add Skill",
               callback: !isEditable ? (){} : () {
                 // SkillFormPage
@@ -616,6 +646,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: MyDropDownWidget(
                     isEditable: isEditable ,
                     // controller: _country,
+                    isRequired: true,
                     title: "Experience",
                     selectedValue: selectedFieldOfStudy,
                     listOfData: fieldOfStudyList,
@@ -646,9 +677,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 Expanded(
                   flex: 4,
                   child: MyDropDownWidget(
+                    isRequired: true,
                     isEditable: isEditable ,
                     // controller: _country,
-                    // title: "Field",
+                    title: "Duration",
                     selectedValue: selectedDuration,
                     listOfData: durationList,
                     callBack: !isEditable ? (_){} : (GeneralFireBaseList? newValue){
@@ -665,6 +697,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
             /// Licenses & Certification
             MyBtnSelector(
+              isRequired: true,
               // controller: TextEditingController(),
               title: "Licenses & Certification",
               hint: "Add Licenses & Certification",
@@ -727,6 +760,7 @@ class _ProfilePageState extends State<ProfilePage> {
             MyBtnSelector(
               // controller: TextEditingController(),
               title: "Interests",
+              isRequired: true,
               hint: "Add Interests",
               callback:!isEditable ? (){} : () {
                 // InterestFormPage
@@ -780,6 +814,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 MyBtnSelector(
                   // controller: TextEditingController(),
                   title: "Upload CV",
+                  isRequired: true,
                   hint: "Browse file",
                   iconWidget: Image.asset(ImagePath.uploadIcon , scale: 6),
                   callback: !isEditable ? (){} : () async {

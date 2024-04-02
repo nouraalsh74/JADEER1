@@ -40,6 +40,7 @@ import '../auth/educationFormPage.dart';
 import '../auth/interestFormPage.dart';
 import '../auth/licensesOrCertificationFormPage.dart';
 import '../home/homePage.dart';
+import 'applySuccessfullyPage.dart';
 
 class ApplyOpportunityPage extends StatefulWidget {
   const ApplyOpportunityPage({
@@ -267,6 +268,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               
                       /// personal information
                       MyBtnSelector(
+                        isRequired: true,
                         // controller: TextEditingController(),
                         title: "Personal information",
                         hint: "Add Education",
@@ -294,6 +296,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                       //educations
                       if (personalInformation != null && personalInformation!.isNotEmpty)
                         Padding(
+
                           padding: const EdgeInsets.only(
                               right: 20.0, left: 20.0, top: 5),
                           child: Container(
@@ -336,6 +339,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               
                       /// Education
                       MyBtnSelector(
+                        isRequired: true,
                         // controller: TextEditingController(),
                         title: "Education",
                         hint: "Add Education",
@@ -415,6 +419,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               
                       /// Skills
                       MyBtnSelector(
+                        isRequired: true,
                         // controller: TextEditingController(),
                         title: "Skills",
                         hint: "Add Skill",
@@ -486,6 +491,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                           Expanded(
                             flex: 6,
                             child: MyDropDownWidget(
+                              isRequired: true,
                               // controller: _country,
                               title: "Experience",
                               selectedValue: selectedFieldOfStudy,
@@ -514,8 +520,9 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                           Expanded(
                             flex: 4,
                             child: MyDropDownWidget(
+                              isRequired: true,
                               // controller: _country,
-                              // title: "Field",
+                              title: "Duration",
                               selectedValue: selectedDuration,
                               listOfData: durationList,
                               callBack: (GeneralFireBaseList? newValue) {
@@ -534,6 +541,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               
                       /// Licenses & Certification
                       MyBtnSelector(
+                        isRequired: true,
                         // controller: TextEditingController(),
                         title: "Licenses & Certification",
                         hint: "Add Licenses & Certification",
@@ -620,6 +628,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                       Column(
                         children: [
                           MyBtnSelector(
+                            isRequired: true,
                             // controller: TextEditingController(),
                             title: "Upload CV",
                             hint: "Browse file",
@@ -738,30 +747,31 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                         title: "Confirmation",
                                         body: "Do you want to apply for this opportunity?",
                                         saveBtn: "Apply",
-                                        onCancel: (){
-                                        stopLoading();
-                                        return ;
-                                        },
-                                        onSave: () async {
-                                          if(educations.isEmpty){
-                                            EasyLoading.showError("Please add at least one education");
-                                            return ;
-                                          } else if(skills.length < 3){
-                                            EasyLoading.showError("Please select at least 3 skill");
-                                            return ;
-                                          } else if(personalInformation == null || personalInformation!.isEmpty){
-                                            EasyLoading.showError("Please fill your personal Information");
-                                            return ;
-                                          } else if (filePathCV== null || filePathCV!.isEmpty){
-                                            EasyLoading.showError("Please upload your cv");
-                                            return ;
-                                          } else {
-
-
-
-
-
-                                            Experience userExperience = Experience(
+                                onCancel: () {
+                                  stopLoading();
+                                  return;
+                                },
+                                onSave: () async {
+                                  if (educations.isEmpty) {
+                                    EasyLoading.showError(
+                                        "Please add at least one education");
+                                    return;
+                                  } else if (skills.length < 3) {
+                                    EasyLoading.showError(
+                                        "Please select at least 3 skill");
+                                    return;
+                                  } else if (personalInformation == null ||
+                                      personalInformation!.isEmpty) {
+                                    EasyLoading.showError(
+                                        "Please fill your personal Information");
+                                    return;
+                                  } else if (filePathCV == null ||
+                                      filePathCV!.isEmpty) {
+                                    EasyLoading.showError(
+                                        "Please upload your cv");
+                                    return;
+                                  } else {
+                                    Experience userExperience = Experience(
                                               name: '${selectedFieldOfStudy?.name}',
                                               numberOfYear: '$selectedDurationYear',
                                               durationName: '${selectedDuration?.name}',
@@ -800,15 +810,31 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                             });
                                             EasyLoading.show();
 
-                                            await Provider.of<OpportunityProvider>(context, listen: false).applyOpportunity(opportunityData: userData , callBack :(){
+                                    await Provider.of<OpportunityProvider>(
+                                            context,
+                                            listen: false)
+                                        .applyOpportunity(
+                                            opportunityData: userData,
+                                            callBack: () {
                                               stopLoading();
-                                              EasyLoading.showSuccess("Thanks for applying" , duration:const Duration(seconds: 3) );
-                                              Navigator.pushAndRemoveUntil(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (BuildContext context) =>
-                                                          HomePage()),
-                                                      (Route<dynamic> route) => false);
+                                              // EasyLoading.showSuccess(
+                                              //     "Thanks for applying",
+                                              //     duration: const Duration(
+                                              //         seconds: 3));
+                                              EasyLoading.dismiss();
+
+
+                                              Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => ApplySuccessfullyPage(
+                                                  oppTitle: widget.opportunity!.title,
+                                              )));
+
+                                              // Navigator.pushAndRemoveUntil(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (BuildContext
+                                              //                 context) =>
+                                              //             HomePage()),
+                                              //         (Route<dynamic> route) => false);
 
                                             });
                                             stopLoading();

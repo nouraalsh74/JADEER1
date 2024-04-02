@@ -10,11 +10,13 @@ import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/customDatePickerTheme.dart';
 import '../../commonWidgets/myConfirmationDialog.dart';
 import '../../commonWidgets/myDropDownWidget.dart';
+import '../../commonWidgets/myDropDownWidgetValidator.dart';
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';
 import '../../commonWidgets/titleSubTitleText.dart';
 import '../../configuration/theme.dart';
 import '../../models/generalListFireBase.dart';
+import '../../models/userProfileModel.dart';
 import '../../providers/dataProvider.dart';
 
 class RegistrationScreenStep1 extends StatefulWidget {
@@ -40,6 +42,8 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
   List<GeneralFireBaseList> cityList = [] ;
   GeneralFireBaseList? selectedCity ;
 
+  List<UserProfile> usersData = [] ;
+
   DateTime _selectedDateOfBirth = DateTime.now();
 
   @override
@@ -49,6 +53,8 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
       countryList.clear();
+      await Provider.of<DataProvider>(context, listen: false).getUserData(usersData);
+
       await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("countries" , countryList);
       cityList.clear();
       await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("cities" , cityList);
@@ -114,11 +120,17 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   isRequired: true,
                   controller: _id,
                   title: "ID",
+                  maxLength: 10,
                   hint: "Enter Your ID",
-                  keyboardType: TextInputType.number,
+                  // keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty ) {
                       return "Please enter your id";
+                    }else if (value.length != 10) {
+                      return "ID must be 10 characters long";
+                    }else if (!RegExp(r'^[a-zA-Z][0-9]{9}$').hasMatch(value)) {
+                      return "Please enter a valid ID";
+                      // return "Please enter a valid ID with the first letter as a character and the next 9 as numbers";
                     }
 
                     return null;
@@ -148,6 +160,15 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                 /// _phoneNumber
                 MyTextForm(
                   isRequired: true,
+                  prefixIcon:  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("+966" ,style: ourTextStyle()),
+                      ),
+                    ],
+                  ),
                   controller: _phoneNumber,
                   keyboardType: TextInputType.number,
                   title: "Phone Number",
@@ -193,12 +214,18 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                 SizedBox(height: size_H(10),),
 
                 /// _country
-                MyDropDownWidget(
+                MyDropDownWidgetValidator(
                   isRequired: true,
                   // controller: _country,
                   title: "Country",
                   selectedValue: selectedCountry,
                   listOfData: countryList,
+                  validator: (value) {
+                    if (value == null) {
+                      return "Please enter your country";
+                    }
+                    return null;
+                  },
                   callBack: (GeneralFireBaseList? newValue){
                     setState(() {
                       selectedCountry = newValue ;
@@ -208,12 +235,18 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                 SizedBox(height: size_H(10),),
 
                 /// _city
-                MyDropDownWidget(
+                MyDropDownWidgetValidator(
                   isRequired: true,
                   // controller: _country,
                   title: "City",
                   selectedValue: selectedCity,
                   listOfData: cityList,
+                  validator: (value) {
+                    if (value == null) {
+                      return "Please enter your city";
+                    }
+                    return null;
+                  },
                   callBack: (GeneralFireBaseList? newValue){
                     setState(() {
                       selectedCity = newValue ;
@@ -233,6 +266,8 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please enter your password";
+                    } else if (value.length < 6) {
+                      return "password should be at least 6 letters and numbers";
                     }
                     return null;
                   },
@@ -250,6 +285,8 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please confirm your password";
+                    } else if (value.length < 6) {
+                      return "password should be at least 6 letters and numbers";
                     }
                     return null;
                   },
@@ -265,15 +302,30 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   text: "Next",
                   callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
                     if (btnState == ButtonState.idle) {
-                      if(selectedCountry == null) {
-                        EasyLoading.showError("Please Select Country");
-                      }
-                      else if(selectedCity == null) {
-                        EasyLoading.showError("Please Select City");
+                      if (!_formKey.currentState!.validate()) {
+                        EasyLoading.showError("Please Fill the Form");
                       }
                       else if(_password.text.isEmpty) {
                         EasyLoading.showError("Please fill the Password");
-                      } else if (_formKey.currentState!.validate()) {
+                      }
+                      else if(_password.text.length < 6) {
+                        EasyLoading.showError("password should be at least 6 letters and numbers");
+                      }
+                      else if(_password.text != _confirmPassword.text) {
+                        EasyLoading.showError("Password not matched!");
+                      }
+                      else  if(selectedCity == null) {
+                        EasyLoading.showError("Please Select City");
+                      } else  if(selectedCountry == null) {
+                        EasyLoading.showError("Please Select Country");
+                      }  else if (isEmailExists(email: _email.text)) {
+                        EasyLoading.showError("Email is exists!");
+                      } else if (isPhoneNumberExists(phoneNumber: "+966${_phoneNumber.text}")) {
+                        EasyLoading.showError("ID is exists!");
+                      } else if (isIDExists(ID: _id.text)) {
+                        EasyLoading.showError("ID is exists!");
+                      }
+                      else if (_formKey.currentState!.validate()) {
                         startLoading();
                         await Future.delayed(const Duration(seconds: 1));
                         // LoginPage
@@ -290,7 +342,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                             dateOfBirth:_dateOfBirth.text,
                             firstName:_firstName.text,
                             lastName:_lastName.text,
-                            phoneNumber: _phoneNumber.text,
+                            phoneNumber: "+966${_phoneNumber.text}",
                           )));
                         }
                         return;
@@ -327,6 +379,30 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
   }
 
 
+  bool isEmailExists({required String email}) {
+    for (UserProfile user in usersData) {
+      if (user.email == email) {
+        return true;
+      }
+    }
+    return false;
+  }
+  bool isIDExists({required String ID}) {
+    for (UserProfile user in usersData) {
+      if (user.id == ID) {
+        return true;
+      }
+    }
+    return false;
+  }
+  bool isPhoneNumberExists({required String phoneNumber}) {
+    for (UserProfile user in usersData) {
+      if (user.phoneNumber == phoneNumber) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 }
 

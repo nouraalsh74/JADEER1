@@ -1,6 +1,7 @@
 
 class ImagePath {
   static String logo = "assets/images/logo.png" ;
+  static String logoWithTitle = "assets/images/logoWithTitle.png" ;
   static String logo_square = "assets/images/logo_square.png" ;
   static String logo_out = "assets/images/logo_out.png" ;
   static String box_welcome = "assets/images/box_welcome.png" ;
@@ -42,6 +43,8 @@ class ImagePath {
   static String document = "assets/images/document.png" ;
   static String successfulApplicationIcon = "assets/images/successfulApplicationIcon.png" ;
   static String mostSuggestedIndustries = "assets/images/mostSuggestedIndustries.png" ;
+  static String doneApply = "assets/images/doneApply.png" ;
+  static String checkDoneApply = "assets/images/checkDoneApply.png" ;
 
 }
 

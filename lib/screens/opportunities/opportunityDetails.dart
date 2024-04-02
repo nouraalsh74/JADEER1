@@ -164,7 +164,40 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                                       // ApplyOpportunityPage
                                       Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => ApplyOpportunityPage(
                                         opportunity: widget.opportunity,
-                                      )));
+                                      ))).then((value) async {
+                                        if(value!= null){
+                                          EasyLoading.show();
+                                         await Provider.of<OpportunityProvider>(context, listen: false).getRate(opportunity_id: widget.opportunity!.id, callBack: (double? rate){
+                                            if(rate != null){
+                                              myRate = rate ;
+                                              setState(() {});
+                                            }
+                                          });
+                                          await Provider.of<OpportunityProvider>(context, listen: false).isApplied(opportunity_id: widget.opportunity!.id, callBack: (bool? isAppliedN) {
+                                            if (isAppliedN != null) {
+                                              isApplied = isAppliedN;
+                                              setState(() {});
+                                              if (isApplied != null &&
+                                                  isApplied == true) {
+                                                Provider.of<
+                                                    OpportunityProvider>(
+                                                    context, listen: false)
+                                                    .getStatus(
+                                                    opportunity_id: widget
+                                                        .opportunity!.id,
+                                                    callBack: (String? status) {
+                                                      if (status != null) {
+                                                        opportunityStatus =
+                                                            status;
+                                                        setState(() {});
+                                                      }
+                                                    });
+                                              }
+                                            }
+                                          });
+                                          EasyLoading.dismiss();
+                                        }
+                                      });
                                     },
                                   ),
                                   SizedBox(width: size_W(5),),

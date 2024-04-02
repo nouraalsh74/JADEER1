@@ -38,10 +38,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             SizedBox(
                 height: size_H(220),
                 child: Image.asset(ImagePath.box_welcome_big )),
+
+
             SizedBox(height: size_H(30)),
             SizedBox(
                 // height: size_H(250),
-                child: Image.asset(ImagePath.logo )),
+                child: Image.asset(ImagePath.logoWithTitle )),
+
             SizedBox(height: size_H(80)),
             MyLoadingBtn(
               text: "Get Started",

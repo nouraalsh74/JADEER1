@@ -140,6 +140,7 @@ class _EducationFormPageState extends State<EducationFormPage> {
                   });
                 },
                 child: MyTextForm(
+                  isRequired: true,
                   enabled: false,
                   controller: _fromDate,
                   title: "Start date",
@@ -162,18 +163,21 @@ class _EducationFormPageState extends State<EducationFormPage> {
                   });
                 },
                 child: MyTextForm(
+                  isRequired: true,
                   enabled: false,
                   controller: _toDate,
                   title: "End date (or expected)",
                   hint: "Choose Date",
+                  // validator: ,
                 ),
               ),
               SizedBox(height: size_H(10),),
 
               /// Grade
               MyTextForm(
+                isRequired: true,
                 controller: _grade,
-                title: "Grade",
+                title: "Grade (Ex: 4/5)",
                 hint: "Enter Your Grade",
                 keyboardType: TextInputType.number,
               ),
@@ -233,6 +237,17 @@ class _EducationFormPageState extends State<EducationFormPage> {
       ),
     );
   }
+
+  bool _validateInput(String value) {
+    // Define your regular expression pattern
+    RegExp regExp = RegExp(r'^\d+\\[\/]\d+$');
+
+    if (!regExp.hasMatch(value)) {
+      return false;
+    }
+    return true;
+  }
+
 
   void onWillPop(BuildContext context) {
     MyConfirmationDialog().showConfirmationDialog(

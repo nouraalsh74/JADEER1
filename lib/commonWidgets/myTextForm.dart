@@ -5,7 +5,10 @@ class MyTextForm extends StatefulWidget {
   MyTextForm({Key? key,
   required this.controller,
   required this.hint,
+  this.suffixIconBase,
   this.title,
+  this.maxLength,
+  this.prefixIcon,
     this.isRequired = false,
     this.isPassword = false,
     this.isSuffixIcon = false,
@@ -18,8 +21,11 @@ class MyTextForm extends StatefulWidget {
   final String? hint ;
   final TextInputType? keyboardType ;
   final bool? isSuffixIcon ;
+  final int? maxLength ;
   final bool? isPadding ;
   final bool isRequired ;
+  final Widget? prefixIcon ;
+  final Widget? suffixIconBase ;
   final bool? enabled ;
   late  bool isPassword  ;
   final TextEditingController? controller ;
@@ -54,11 +60,13 @@ class _MyTextFormState extends State<MyTextForm> {
               enabled: widget.enabled,
               obscureText: widget.isPassword ,
               controller: widget.controller,
+              maxLength: widget.maxLength,
               style: ourTextStyle(),
               decoration: InputDecoration(
                 errorStyle:ourTextStyle(color: Theme_Information.Color_10 , fontSize: 10) ,
                 // suffixIcon: ,
-                suffixIcon:  suffixIcon(),
+                suffixIcon:  widget.suffixIconBase ?? suffixIcon(),
+                prefixIcon: widget.prefixIcon,
                 hintStyle: ourTextStyle(color: Theme_Information.Color_8),
                 filled: true,
                 hintText: "${widget.hint}",
