@@ -79,6 +79,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                 SizedBox(height: size_H(40),),
                 /// _firstName
                 MyTextForm(
+                  isRequired: true,
                   controller: _firstName,
                   title: "First Name",
                   hint: "Enter First Name",
@@ -92,6 +93,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                 SizedBox(height: size_H(20),),
                 /// _lastName
                 MyTextForm(
+                  isRequired: true,
                   controller: _lastName,
                   title: "Last Name",
                   hint: "Enter Last Name",
@@ -107,6 +109,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                 /// _id
                 MyTextForm(
                   controller: _id,
+                  isRequired: true,
                   title: "ID",
                   hint: "Enter Your ID",
                   keyboardType: TextInputType.number,
@@ -122,6 +125,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
 
                 /// _email
                 MyTextForm(
+                  isRequired: true,
                   controller: _email,
                   title: "Email",
                   keyboardType: TextInputType.emailAddress,
@@ -140,6 +144,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
 
                 /// _phoneNumber
                 MyTextForm(
+                  isRequired: true,
                   controller: _phoneNumber,
                   keyboardType: TextInputType.number,
                   title: "Phone Number",
@@ -170,6 +175,7 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                   },
                   child: MyTextForm(
                     enabled: false,
+                    isRequired: true,
                     controller: _dateOfBirth,
                     title: "Date of Birth",
                     hint: "Enter Date of Birth",
@@ -218,11 +224,12 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                   text: "Back",
                   callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
                     if (btnState == ButtonState.idle) {
-                      if(selectedCountry == null) {
+                      if (selectedCountry == null) {
                         EasyLoading.showError("Please Select Country");
-                      }
-                      else if(selectedCity == null) {
+                      } else if (selectedCity == null) {
                         EasyLoading.showError("Please Select City");
+                      } else if (!_formKey.currentState!.validate()) {
+                        EasyLoading.showError("Please fill the form");
                       } else if (_formKey.currentState!.validate()) {
                         startLoading();
                         await Future.delayed(const Duration(seconds: 1));

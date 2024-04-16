@@ -8,14 +8,17 @@ import 'package:provider/provider.dart';
 
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../configuration/theme.dart';
+import '../../models/myOpportunityModel.dart';
 import '../../models/userProfileModel.dart';
 import '../../providers/opportunityProvider.dart';
 import '../../providers/userProvider.dart';
 import '../home/homePage.dart';
+import 'opportunityDetails.dart';
 
 class ApplySuccessfullyPage extends StatefulWidget {
   final String oppTitle ;
-  const ApplySuccessfullyPage({Key? key , required this.oppTitle}) : super(key: key);
+  final String oppID ;
+  const ApplySuccessfullyPage({Key? key , required this.oppTitle, required this.oppID}) : super(key: key);
   @override
   State<ApplySuccessfullyPage> createState() => _ApplySuccessfullyPageState();
 }
@@ -80,6 +83,15 @@ class _ApplySuccessfullyPageState extends State<ApplySuccessfullyPage> {
 
                     Navigator.of(context).pop(true);
                     Navigator.of(context).pop(true);
+                    // List<MyAppliedOpportunity> myApplyOpportunity = [];
+                    // await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , myApplyOpportunity);
+                    // MyAppliedOpportunity opportunity = myApplyOpportunity.firstWhere((element) => element.opportunity!.id == widget.oppID);
+                    //
+                    // Navigator.of(context).pop(true);
+                    // Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(
+                    //   opportunity: opportunity.opportunity ,
+                    //   applyOpportunityID: opportunity.applyOpportunityID,)));
+
 
                     return;
                   }

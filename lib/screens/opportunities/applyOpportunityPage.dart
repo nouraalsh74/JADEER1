@@ -321,7 +321,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                         saveBtn: "Remove",
                                         onSave: () {
                                           setState(() {
-                                            filePathCV = null;
+                                            personalInformation = null;
                                           });
                                         },
                                       );
@@ -491,7 +491,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                           Expanded(
                             flex: 6,
                             child: MyDropDownWidget(
-                              isRequired: true,
+                              isRequired: false,
                               // controller: _country,
                               title: "Experience",
                               selectedValue: selectedFieldOfStudy,
@@ -520,7 +520,8 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                           Expanded(
                             flex: 4,
                             child: MyDropDownWidget(
-                              isRequired: true,
+                              // isRequired: true,
+                              isRequired: false,
                               // controller: _country,
                               title: "Duration",
                               selectedValue: selectedDuration,
@@ -541,7 +542,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               
                       /// Licenses & Certification
                       MyBtnSelector(
-                        isRequired: true,
+                        // isRequired: true,
                         // controller: TextEditingController(),
                         title: "Licenses & Certification",
                         hint: "Add Licenses & Certification",
@@ -815,27 +816,23 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                             listen: false)
                                         .applyOpportunity(
                                             opportunityData: userData,
-                                            callBack: () {
+                                            callBack: () async {
+
+                                              await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunityForApply("apply_opportunities");
+
+
+
+
                                               stopLoading();
-                                              // EasyLoading.showSuccess(
-                                              //     "Thanks for applying",
-                                              //     duration: const Duration(
-                                              //         seconds: 3));
+
+
                                               EasyLoading.dismiss();
 
 
                                               Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => ApplySuccessfullyPage(
                                                   oppTitle: widget.opportunity!.title,
+                                                  oppID: widget.opportunity!.id,
                                               )));
-
-                                              // Navigator.pushAndRemoveUntil(
-                                              //     context,
-                                              //     MaterialPageRoute(
-                                              //         builder: (BuildContext
-                                              //                 context) =>
-                                              //             HomePage()),
-                                              //         (Route<dynamic> route) => false);
-
                                             });
                                             stopLoading();
                                           }

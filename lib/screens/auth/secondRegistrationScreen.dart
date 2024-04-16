@@ -13,13 +13,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-
 import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/myBtnSelector.dart';
 import '../../commonWidgets/myBtnSelectorExperience.dart';
 import '../../commonWidgets/myConfirmationDialog.dart';
 import '../../commonWidgets/myDropDownWidget.dart';
-import '../../commonWidgets/myDropDownWidget2.dart';
 import '../../commonWidgets/myDropDownWidgetNumber.dart';
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../commonWidgets/myTextForm.dart';

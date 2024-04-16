@@ -122,16 +122,17 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   title: "ID",
                   maxLength: 10,
                   hint: "Enter Your ID",
+                  keyboardType: TextInputType.number,
                   // keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty ) {
                       return "Please enter your id";
-                    }else if (value.length != 10) {
-                      return "ID must be 10 characters long";
-                    }else if (!RegExp(r'^[a-zA-Z][0-9]{9}$').hasMatch(value)) {
+                    }else if (value.substring(0, 1) != "1" || !RegExp(r'^[0-9]+$').hasMatch(value.substring(1))) {
                       return "Please enter a valid ID";
-                      // return "Please enter a valid ID with the first letter as a character and the next 9 as numbers";
+                    } else if (value.length != 10) {
+                      return "ID must be 10 characters long";
                     }
+
 
                     return null;
                   },
@@ -172,13 +173,16 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                   controller: _phoneNumber,
                   keyboardType: TextInputType.number,
                   title: "Phone Number",
+                  maxLength: 9,
                   hint: "Enter Phone Number",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please enter your phone number";
                     }
-                    if (!RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
+                    if (value.substring(0, 1) != "5" || !RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
                       return 'Please enter a valid phone number';
+                    } else if (value.length != 9) {
+                      return "phone number must be 9 numbers";
                     }
                     return null;
                   },
@@ -321,7 +325,7 @@ class _RegistrationScreenStep1State extends State<RegistrationScreenStep1> {
                       }  else if (isEmailExists(email: _email.text)) {
                         EasyLoading.showError("Email is exists!");
                       } else if (isPhoneNumberExists(phoneNumber: "+966${_phoneNumber.text}")) {
-                        EasyLoading.showError("ID is exists!");
+                        EasyLoading.showError("Phone Number is exists!");
                       } else if (isIDExists(ID: _id.text)) {
                         EasyLoading.showError("ID is exists!");
                       }

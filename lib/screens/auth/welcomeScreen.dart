@@ -27,6 +27,20 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  User? user ;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      user = FirebaseAuth.instance.currentUser;
+      setState(() {});
+    });
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,39 +77,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         
               },
             ),
-        
-            SizedBox(height: size_H(20)),
-///
-//             MyLoadingBtn(
-//               text: "Upload Data",
-//               callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
-//                 if (btnState == ButtonState.idle) {
-//                   startLoading();
-//                   List<String> locations = [
-//                     "Human Resources",
-//                     "Finance & Accounting",
-//                     "Computer Science",
-//                     "Healthcare",
-//                     "Engineering",
-//                     "Marketing",
-//                     "Political Science",
-//                     "Mathematics and Statistics",
-//                     "Literature"
-//                   ];
-//                   await  addDataToFirebase("specialties_for_mentors", locations);
-//
-//
-//
-//                   stopLoading();
-//                 }
-//
-//
-//               },
-//             ),
-///
-        
             SizedBox(height: size_H(10)),
             Image.asset(ImagePath.box_welcome , scale: 3, ),
+            SizedBox(height: size_H(20)),
+
+          if(user == null)
+          InkWell(
+            onTap: (){
+              Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => LoginPage()));
+            },
+            child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Text("Already have an account? " , style: ourTextStyle(fontWeight: FontWeight.w500),),
+              Text("Sign in" , style: ourTextStyle(color: Theme_Information.Primary_Color ,fontWeight: FontWeight.w500),)
+              ],
+            ),
+          ),
+
+
+
           ],
         ),
       ),

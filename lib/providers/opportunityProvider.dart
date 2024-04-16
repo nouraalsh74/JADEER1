@@ -28,6 +28,7 @@ class OpportunityProvider with ChangeNotifier{
     return false ;
   }
   bool? isOpportunityApplied({required Opportunity opportunity}){
+    // apply_opportunities
     final itemIndex =  myAppliedOpportunity.indexWhere((element) => element.opportunity!.id == opportunity.id);
     if(itemIndex != -1){
       return true ;
@@ -295,6 +296,60 @@ class OpportunityProvider with ChangeNotifier{
     }
   }
 
+  Future fetchDataFromFirestoreMyOpportunityForApply(String collectionName ) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    myAppliedOpportunity.clear() ;
+    try {
+      QuerySnapshot querySnapshot =
+      await firestore.collection(collectionName)
+          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot document in querySnapshot.docs) {
+          myAppliedOpportunity.add(
+            MyAppliedOpportunity(
+              id: document.data().toString().contains('ID') ? document.get('ID') : '',
+              dateApply: document.data().toString().contains('date_apply') ? document.get('date_apply') : null,
+              cvPath: document.data().toString().contains('cv_path') ? document.get('cv_path') : null,
+              status: document.data().toString().contains('status') ? document.get('status') : null,
+              education: (document.data().toString().contains('education') && document.get('education') != null)
+                  ? List<Education>.from(document.get('education').map((x) => Education.fromJson(x)))
+                  : null,
+              dateOfBirth: document.data().toString().contains('date_of_birth') ? document.get('date_of_birth') : null,
+              lastName: document.data().toString().contains('last_name') ? document.get('last_name') : null,
+              applyOpportunityID: document.data().toString().contains('apply_id') ? document.get('apply_id') : null,
+              experience: document.data().toString().contains('experience') && document.get('experience') != null
+                  ? Experience.fromJson(document.get('experience'))
+                  : null,
+              skills: (document.data().toString().contains('skills') && document.get('skills') != null)
+                  ? List<String>.from(document.get('skills'))
+                  : null,
+              licensesOrCertifications: (document.data().toString().contains('licenses_or_certifications') && document.get('licenses_or_certifications') != null)
+                  ? List<LicensesOrCertification>.from(document.get('licenses_or_certifications').map((x) => LicensesOrCertification.fromJson(x)))
+                  : null,
+              userId: document.data().toString().contains('user_id') ? document.get('user_id') : null,
+              phoneNumber: document.data().toString().contains('phone_number') ? document.get('phone_number') : null,
+              interests: (document.data().toString().contains('interests') && document.get('interests') != null)
+                  ? List<String>.from(document.get('interests'))
+                  : null,
+              firstName: document.data().toString().contains('first_name') ? document.get('first_name') : null,
+              email: document.data().toString().contains('email') ? document.get('email') : null,
+              countryId: document.data().toString().contains('country_id') ? document.get('country_id') : null,
+              cityId: document.data().toString().contains('city_id') ? document.get('city_id') : null,
+              opportunity: document.data().toString().contains('opportunity') && document.get('opportunity') != null
+                  ? Opportunity.fromJson(document.get('opportunity'))
+                  : null,
+            ),
+          );
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
   Future fetchDataFromFirestoreSavedOpportunity(String collectionName , String userId) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     print("userId ${userId}");
@@ -365,9 +420,10 @@ class OpportunityProvider with ChangeNotifier{
       callBack(ratee);
     }
   }
-  isApplied({required String opportunity_id , required Function(bool? isApplied) callBack}) async {
+  isApplied({required String opportunity_id , required Function(bool? isAppliedN , String? applyID) callBack}) async {
     final UID = FirebaseAuth.instance.currentUser!.uid;
     bool isAppliedD = false ;
+    String? appliedID  ;
     final data = await FirebaseFirestore.instance
         .collection('apply_opportunities')
         .where("user_id", isEqualTo: UID)
@@ -376,11 +432,13 @@ class OpportunityProvider with ChangeNotifier{
       final data = MyAppliedOpportunity.fromJson(Category.data());
       if(data.opportunity!.id == opportunity_id){
         isAppliedD = true ;
+        appliedID = data.applyOpportunityID;
         break ;
       }
     }
     print("isAppliedD ${isAppliedD}");
-    callBack(isAppliedD);
+    print("appliedID ${appliedID}");
+    callBack(isAppliedD , appliedID);
   }
   getStatus({required String opportunity_id , required Function(String? status) callBack}) async {
     final UID = FirebaseAuth.instance.currentUser!.uid;

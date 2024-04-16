@@ -49,6 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _dateOfBirth = TextEditingController();
 
+  List<UserProfile> usersData = [] ;
+
   List<GeneralFireBaseList> countryList = [] ;
   GeneralFireBaseList? selectedCountry ;
 
@@ -85,6 +87,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     Future.delayed(Duration.zero, () async {
       EasyLoading.show();
+
+      await Provider.of<DataProvider>(context, listen: false).getUserData(usersData);
+
       countryList.clear();
       await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestore("countries" , countryList);
       cityList.clear();
@@ -194,6 +199,37 @@ class _ProfilePageState extends State<ProfilePage> {
               text: "Save",
               callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
 
+                if (!_formKey.currentState!.validate()) {
+                  EasyLoading.showError("Please Fill the Form");
+                  return;
+                }
+                else  if(selectedCity == null) {
+                  EasyLoading.showError("Please Select City");
+                  return;
+                } else  if(selectedCountry == null) {
+                  EasyLoading.showError("Please Select Country");
+                  return;
+                } else  if(filePathCV == null) {
+                  EasyLoading.showError("Please upload your CV");
+                  return;
+                } else
+                if (educations.isEmpty) {
+                  EasyLoading.showError(
+                      "Please add at least one education");
+                  return;
+                } else if (skills.length < 3) {
+                  EasyLoading.showError(
+                      "Please select at least 3 skill");
+                  return;
+                } else if (interests.length < 3) {
+                  EasyLoading.showError(
+                      "Please select at least 3 interest");
+                  return;
+                }
+                //    if (filePathCV != filePathCVBase) {
+
+
+
                 MyConfirmationDialog().showConfirmationDialog(
                   context: context,
                   title: "Confirmation",
@@ -205,19 +241,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                         onSave: () async {
                           if (btnState == ButtonState.idle) {
-                            if (educations.isEmpty) {
-                              EasyLoading.showError(
-                                  "Please add at least one education");
+                            if (!_formKey.currentState!.validate()) {
+                              EasyLoading.showError("Please Fill the Form");
                               return;
-                            } else if (skills.length < 3) {
-                              EasyLoading.showError(
-                                  "Please select at least 3 skill");
-                              return;
-                            } else if (interests.length < 3) {
-                              EasyLoading.showError(
-                                  "Please select at least 3 interest");
-                              return;
-                            } else {
+                            }
+                            else {
                               startLoading();
                               Experience userExperience = Experience(
                                 name: '${selectedFieldOfStudy?.name}',
@@ -311,594 +339,597 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Image.asset(ImagePath.profileTop),
-                Positioned.fill(
-                  top: size_H(30),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: [
+        child: Form(
+            key: _formKey,
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Image.asset(ImagePath.profileTop),
+                  Positioned.fill(
+                    top: size_H(30),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            BackIcon(
-                                onBack: (){
-                                  onWillPop(context);
-                                },
-                              backWidget: Image.asset(ImagePath.backBtn , color: Colors.white , scale: 3),
-                            ),
-                            if(userProfile != null)
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(height: size_H(20),),
-                                Text("Profile", style: ourTextStyle(color: Theme_Information.Color_1 , fontSize: 15)),
-                                SizedBox(height: size_H(20),),
-                                Image.asset(ImagePath.profileAvatar, scale: 5,),
-                                SizedBox(height: size_H(10),),
-                                Text("${userProfile!.firstName} ${userProfile!.lastName}"  , style: ourTextStyle(color: Theme_Information.Color_1 , fontSize: 15),),
-                              ],
-                            ),
-                            if(!isEditable)
-                            BackIcon(
-                                onBack: (){
-                                  setState(() {
-                                    isEditable = !isEditable ;
-                                  });
-                                },
-                              backWidget: Image.asset( ImagePath.editIcon , color: Colors.white , scale: 3),
-                            ),
-                            if(isEditable)
-                              SizedBox(width: size_W(60),)
-                          ],
-                        ),
-                      ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BackIcon(
+                                  onBack: (){
+                                    onWillPop(context);
+                                  },
+                                backWidget: Image.asset(ImagePath.backBtn , color: Colors.white , scale: 3),
+                              ),
+                              if(userProfile != null)
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: size_H(20),),
+                                  Text("Profile", style: ourTextStyle(color: Theme_Information.Color_1 , fontSize: 15)),
+                                  SizedBox(height: size_H(20),),
+                                  Image.asset(ImagePath.profileAvatar, scale: 5,),
+                                  SizedBox(height: size_H(10),),
+                                  Text("${userProfile!.firstName} ${userProfile!.lastName}"  , style: ourTextStyle(color: Theme_Information.Color_1 , fontSize: 15),),
+                                ],
+                              ),
+                              if(!isEditable)
+                              BackIcon(
+                                  onBack: (){
+                                    setState(() {
+                                      isEditable = !isEditable ;
+                                    });
+                                  },
+                                backWidget: Image.asset( ImagePath.editIcon , color: Colors.white , scale: 3),
+                              ),
+                              if(isEditable)
+                                SizedBox(width: size_W(60),)
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-              ],
-            ),
-            // SizedBox(height: size_H(30),),
+                ],
+              ),
+              // SizedBox(height: size_H(30),),
 
-            SizedBox(height: size_H(10),),
-            /// _firstName
-            MyTextForm(
-              enabled: isEditable,
-              controller: _firstName,
-              isRequired: true,
-              title: "First Name",
-              hint: "Enter First Name",
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your first name";
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: size_H(20),),
-            /// _lastName
-            MyTextForm(
-              isRequired: true,
-              enabled: isEditable,
-              controller: _lastName,
-              title: "Last Name",
-              hint: "Enter Last Name",
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your last name";
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _id
-            MyTextForm(
-              enabled: isEditable,
-              controller: _id,
-              isRequired: true,
-              title: "ID",
-              hint: "Enter Your ID",
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your id";
-                }
-
-                return null;
-              },
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _email
-            MyTextForm(
-              enabled: isEditable,
-              controller: _email,
-              title: "Email",
-              isRequired: true,
-              keyboardType: TextInputType.emailAddress,
-              hint: "Enter Email",
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your email";
-                }
-                if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(value)) {
-                  return 'Please enter a valid email address';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _phoneNumber
-            MyTextForm(
-              enabled: isEditable,
-              controller: _phoneNumber,
-              isRequired: true,
-              keyboardType: TextInputType.number,
-              title: "Phone Number",
-              hint: "Enter Phone Number",
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your phone number";
-                }
-                if (!RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
-                  return 'Please enter a valid phone number';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _dateOfBirth
-            GestureDetector(
-              onTap: !isEditable ? null : (){
-                MyDatePicker().selectDate(context , _selectedDateOfBirth).then((value) {
-                  if(value != null){
-                    setState(() {
-                      final DateFormat serverFormater = DateFormat('dd/MM/yyyy');
-                      _dateOfBirth.text = serverFormater.format(value);
-                    });
-                  }
-                });
-              },
-              child: MyTextForm(
+              SizedBox(height: size_H(10),),
+              /// _firstName
+              MyTextForm(
+                enabled: isEditable,
+                controller: _firstName,
                 isRequired: true,
-                enabled: false,
-                controller: _dateOfBirth,
-                title: "Date of Birth",
-                hint: "Enter Date of Birth",
+                title: "First Name",
+                hint: "Enter First Name",
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "Please enter your date of birth";
+                    return "Please enter your first name";
                   }
                   return null;
                 },
               ),
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _country
-            MyDropDownWidget(
-              isEditable: isEditable,
-              // controller: _country,
-              isRequired: true,
-              title: "Country",
-              selectedValue: selectedCountry,
-              listOfData: countryList,
-              callBack: (GeneralFireBaseList? newValue){
-                setState(() {
-                  selectedCountry = newValue ;
-                });
-              },
-            ),
-            SizedBox(height: size_H(10),),
-
-            /// _city
-            MyDropDownWidget(
-              isEditable: isEditable,
-              // controller: _country,
-              title: "City",
-              isRequired: true,
-              selectedValue: selectedCity,
-              listOfData: cityList,
-              callBack: (GeneralFireBaseList? newValue){
-                setState(() {
-                  selectedCity = newValue ;
-                });
-              },
-            ),
-
-
-            SizedBox(height: size_H(20),),
-
-
-            /// Education
-            MyBtnSelector(
-              // controller: TextEditingController(),
-              title: "Education",
-              hint: "Add Education",
-              isRequired: true,
-              callback: !isEditable ? (){} : () {
-                // EducationFormPage
-                Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => EducationFormPage())).then((value) {
-                  if(value != null){
-                    value = value as Education ;
-                    setState(() {
-                      educations.add(value);
-                    });
-                  } else{
-                    print("{value}_NULL");
+              SizedBox(height: size_H(20),),
+              /// _lastName
+              MyTextForm(
+                isRequired: true,
+                enabled: isEditable,
+                controller: _lastName,
+                title: "Last Name",
+                hint: "Enter Last Name",
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your last name";
                   }
-                });
-              },
-            ),
-            //educations
-            if(educations.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
-                child: Column(
-                  children: List.generate(educations.length, (index) {
-                    Education _education = educations[index];
-                    return Container(
-                      height: size_H(40),
-                      child: Row(
-                        // mainAxisAlignment: MainAxisAlignment.s,
-                        children: [
-                          Expanded(child: Text("${index+1} - ${_education.universityName}" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
-                          SizedBox(width: size_W(5),),
-                          GestureDetector(
-                              onTap: !isEditable ? (){} :  (){
-                                // Confirmation
-                                // 'Do you want to complete?'
-                                MyConfirmationDialog().showConfirmationDialog(
-                                  context: context,
-                                  title: "Confirmation",
-                                  body: "Do you want to remove this education?",
-                                  saveBtn: "Remove",
-                                  onSave: (){
-                                    setState(() {
-                                      educations.removeWhere((element) => element == _education);
-                                    });
-                                  },
-                                );
-                              },
-                              child: Icon(Icons.remove_circle_outline_sharp))
-                        ],
-                      ),
-                    ) ;
-                  }),
-                ),
+                  return null;
+                },
               ),
+              SizedBox(height: size_H(10),),
 
-
-            SizedBox(height: size_H(20),),
-
-            /// Skills
-            MyBtnSelector(
-              // controller: TextEditingController(),
-              title: "Skills",
-              isRequired: true,
-              hint: "Add Skill",
-              callback: !isEditable ? (){} : () {
-                // SkillFormPage
-                Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => SkillFormPage(skills:skills))).then((value) {
-                  if(value != null){
-                    print("${value}");
-                    value = value as List<String> ;
-                    setState(() {
-                      skills = value! ;
-                    });
-                  } else{
-                    print("{value}_NULL");
+              /// _id
+              MyTextForm(
+                enabled: isEditable,
+                controller: _id,
+                isRequired: true,
+                title: "ID",
+                hint: "Enter Your ID",
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your id";
                   }
 
-                });
-              },
-            ),
-
-            if(skills.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.s,
-                  children: [
-                    Expanded(child: Text("${skills.length} skills Added" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
-                    SizedBox(width: size_W(5),),
-                    GestureDetector(
-                        onTap: !isEditable ? (){} : (){
-                          // Confirmation
-                          // 'Do you want to complete?'
-                          MyConfirmationDialog().showConfirmationDialog(
-                            context: context,
-                            title: "Confirmation",
-                            body: "Do you want to remove all skill?",
-                            saveBtn: "Remove",
-                            onSave: (){
-                              setState(() {
-                                skills.clear();
-                              });
-                            },
-                          );
-                        },
-                        child: Icon(Icons.remove_circle_outline_sharp))
-                  ],
-                ),
+                  return null;
+                },
               ),
+              SizedBox(height: size_H(10),),
 
+              /// _email
+              MyTextForm(
+                enabled: isEditable,
+                controller: _email,
+                title: "Email",
+                isRequired: true,
+                keyboardType: TextInputType.emailAddress,
+                hint: "Enter Email",
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your email";
+                  }
+                  if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(value)) {
+                    return 'Please enter a valid email address';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: size_H(10),),
 
-            SizedBox(
-              height: size_H(20),
-            ),
+              /// _phoneNumber
+              MyTextForm(
+                enabled: isEditable,
+                controller: _phoneNumber,
+                isRequired: true,
+                keyboardType: TextInputType.number,
+                title: "Phone Number",
+                hint: "Enter Phone Number",
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your phone number";
+                  }
+                  if (!RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
+                    return 'Please enter a valid phone number';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: size_H(10),),
 
-
-            Row(
-              children: [
-                Expanded(
-                  flex: 6,
-                  child: MyDropDownWidget(
-                    isEditable: isEditable ,
-                    // controller: _country,
-                    isRequired: true,
-                    title: "Experience",
-                    selectedValue: selectedFieldOfStudy,
-                    listOfData: fieldOfStudyList,
-                    callBack: !isEditable ? (_){} :(GeneralFireBaseList? newValue){
+              /// _dateOfBirth
+              GestureDetector(
+                onTap: !isEditable ? null : (){
+                  MyDatePicker().selectDate(context , _selectedDateOfBirth).then((value) {
+                    if(value != null){
                       setState(() {
-                        selectedFieldOfStudy = newValue ;
+                        final DateFormat serverFormater = DateFormat('dd/MM/yyyy');
+                        _dateOfBirth.text = serverFormater.format(value);
                       });
-                    },
-                  ),
-                ),
-
-                Expanded(
-                  flex: 3,
-                  child: MyDropDownWidgetNumber(
-                    isEditable: isEditable ,
-                    // controller: _country,
-                    // title: "Field",
-                    selectedValue: selectedDurationYear,
-                    listOfData: durationYearList,
-                    callBack: !isEditable ? (_){} : (int? newValue){
-                      setState(() {
-                        selectedDurationYear = newValue ;
-                      });
-                    },
-                  ),
-                ),
-
-                Expanded(
-                  flex: 4,
-                  child: MyDropDownWidget(
-                    isRequired: true,
-                    isEditable: isEditable ,
-                    // controller: _country,
-                    title: "Duration",
-                    selectedValue: selectedDuration,
-                    listOfData: durationList,
-                    callBack: !isEditable ? (_){} : (GeneralFireBaseList? newValue){
-                      setState(() {
-                        selectedDuration = newValue ;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: size_H(20),),
-
-            /// Licenses & Certification
-            MyBtnSelector(
-              isRequired: true,
-              // controller: TextEditingController(),
-              title: "Licenses & Certification",
-              hint: "Add Licenses & Certification",
-              callback: !isEditable ? (){} : () {
-                // LicensesOrCertificationFormPage
-                Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => LicensesOrCertificationFormPage())).then((value) {
-                  if(value != null){
-                    value = value as LicensesOrCertification ;
-                    setState(() {
-                      licensesOrCertification.add(value);
-                    });
-                  } else{
-                    print("{value}_NULL");
-                  }
-                });
-              },
-            ),
-            //educations
-            if(licensesOrCertification.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
-                child: Column(
-                  children: List.generate(licensesOrCertification.length, (index) {
-                    LicensesOrCertification _licensesOrCertification = licensesOrCertification[index];
-                    return Container(
-                      height: size_H(40),
-                      child: Row(
-                        // mainAxisAlignment: MainAxisAlignment.s,
-                        children: [
-                          Expanded(child: Text("${index+1} - ${_licensesOrCertification.name}" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
-                          SizedBox(width: size_W(5),),
-                          GestureDetector(
-                              onTap: !isEditable ? (){} :  (){
-                                // Confirmation
-                                // 'Do you want to complete?'
-                                MyConfirmationDialog().showConfirmationDialog(
-                                  context: context,
-                                  title: "Confirmation",
-                                  body: "Do you want to remove this licenses or certification?",
-                                  saveBtn: "Remove",
-                                  onSave: (){
-                                    setState(() {
-                                      licensesOrCertification.removeWhere((element) => element == _licensesOrCertification);
-                                    });
-                                  },
-                                );
-                              },
-                              child: Icon(Icons.remove_circle_outline_sharp))
-                        ],
-                      ),
-                    ) ;
-                  }),
-                ),
-              ),
-
-            SizedBox(
-              height: size_H(20),
-            ),
-
-            MyBtnSelector(
-              // controller: TextEditingController(),
-              title: "Interests",
-              isRequired: true,
-              hint: "Add Interests",
-              callback:!isEditable ? (){} : () {
-                // InterestFormPage
-                Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => InterestFormPage(interests:interests))).then((value) {
-                  if(value != null){
-                    print("${value}");
-                    value = value as List<String> ;
-                    setState(() {
-                      interests = value! ;
-                    });
-                  } else{
-                    print("{value}_NULL");
-                  }
-                });
-              },
-            ),
-            if(interests.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.s,
-                  children: [
-                    Expanded(child: Text("${interests.length} interests Added" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
-                    SizedBox(width: size_W(5),),
-                    GestureDetector(
-                        onTap: !isEditable ? (){} : (){
-                          // Confirmation
-                          // 'Do you want to complete?'
-                          MyConfirmationDialog().showConfirmationDialog(
-                            context: context,
-                            title: "Confirmation",
-                            body: "Do you want to remove all interests?",
-                            saveBtn: "Remove",
-                            onSave: (){
-                              setState(() {
-                                interests.clear();
-                              });
-                            },
-                          );
-                        },
-                        child: Icon(Icons.remove_circle_outline_sharp))
-                  ],
-                ),
-              ),
-
-
-            SizedBox(height: size_H(20),),
-
-            Column(
-              children: [
-                MyBtnSelector(
-                  // controller: TextEditingController(),
-                  title: "Upload CV",
+                    }
+                  });
+                },
+                child: MyTextForm(
                   isRequired: true,
-                  hint: "Browse file",
-                  iconWidget: Image.asset(ImagePath.uploadIcon , scale: 6),
-                  callback: !isEditable ? (){} : () async {
-                    // _showActionSheet(context);
+                  enabled: false,
+                  controller: _dateOfBirth,
+                  title: "Date of Birth",
+                  hint: "Enter Date of Birth",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your date of birth";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: size_H(10),),
 
-                    final act = CupertinoActionSheet(
-                        actions: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0 , left: 8 ),
-                            child: CupertinoActionSheetAction(
-                              child: Text('Browse' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 , )),
-                              onPressed: () async {
-                                String? path = await pickFile();
-                                if (path != null) {
-                                  Navigator.pop(context);
-                                }
+              /// _country
+              MyDropDownWidget(
+                isEditable: isEditable,
+                // controller: _country,
+                isRequired: true,
+                title: "Country",
+                selectedValue: selectedCountry,
+                listOfData: countryList,
+                callBack: (GeneralFireBaseList? newValue){
+                  setState(() {
+                    selectedCountry = newValue ;
+                  });
+                },
+              ),
+              SizedBox(height: size_H(10),),
+
+              /// _city
+              MyDropDownWidget(
+                isEditable: isEditable,
+                // controller: _country,
+                title: "City",
+                isRequired: true,
+                selectedValue: selectedCity,
+                listOfData: cityList,
+                callBack: (GeneralFireBaseList? newValue){
+                  setState(() {
+                    selectedCity = newValue ;
+                  });
+                },
+              ),
+
+
+              SizedBox(height: size_H(20),),
+
+
+              /// Education
+              MyBtnSelector(
+                // controller: TextEditingController(),
+                title: "Education",
+                hint: "Add Education",
+                isRequired: true,
+                callback: !isEditable ? (){} : () {
+                  // EducationFormPage
+                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => EducationFormPage())).then((value) {
+                    if(value != null){
+                      value = value as Education ;
+                      setState(() {
+                        educations.add(value);
+                      });
+                    } else{
+                      print("{value}_NULL");
+                    }
+                  });
+                },
+              ),
+              //educations
+              if(educations.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
+                  child: Column(
+                    children: List.generate(educations.length, (index) {
+                      Education _education = educations[index];
+                      return Container(
+                        height: size_H(40),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.s,
+                          children: [
+                            Expanded(child: Text("${index+1} - ${_education.universityName}" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
+                            SizedBox(width: size_W(5),),
+                            GestureDetector(
+                                onTap: !isEditable ? (){} :  (){
+                                  // Confirmation
+                                  // 'Do you want to complete?'
+                                  MyConfirmationDialog().showConfirmationDialog(
+                                    context: context,
+                                    title: "Confirmation",
+                                    body: "Do you want to remove this education?",
+                                    saveBtn: "Remove",
+                                    onSave: (){
+                                      setState(() {
+                                        educations.removeWhere((element) => element == _education);
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Icon(Icons.remove_circle_outline_sharp))
+                          ],
+                        ),
+                      ) ;
+                    }),
+                  ),
+                ),
+
+
+              SizedBox(height: size_H(20),),
+
+              /// Skills
+              MyBtnSelector(
+                // controller: TextEditingController(),
+                title: "Skills",
+                isRequired: true,
+                hint: "Add Skill",
+                callback: !isEditable ? (){} : () {
+                  // SkillFormPage
+                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => SkillFormPage(skills:skills))).then((value) {
+                    if(value != null){
+                      print("${value}");
+                      value = value as List<String> ;
+                      setState(() {
+                        skills = value! ;
+                      });
+                    } else{
+                      print("{value}_NULL");
+                    }
+
+                  });
+                },
+              ),
+
+              if(skills.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.s,
+                    children: [
+                      Expanded(child: Text("${skills.length} skills Added" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
+                      SizedBox(width: size_W(5),),
+                      GestureDetector(
+                          onTap: !isEditable ? (){} : (){
+                            // Confirmation
+                            // 'Do you want to complete?'
+                            MyConfirmationDialog().showConfirmationDialog(
+                              context: context,
+                              title: "Confirmation",
+                              body: "Do you want to remove all skill?",
+                              saveBtn: "Remove",
+                              onSave: (){
+                                setState(() {
+                                  skills.clear();
+                                });
                               },
-                            ),
-                          ),
-                          if(filePathCV != null)
+                            );
+                          },
+                          child: Icon(Icons.remove_circle_outline_sharp))
+                    ],
+                  ),
+                ),
+
+
+              SizedBox(
+                height: size_H(20),
+              ),
+
+
+              Row(
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: MyDropDownWidget(
+                      isEditable: isEditable ,
+                      // controller: _country,
+                      isRequired: true,
+                      title: "Experience",
+                      selectedValue: selectedFieldOfStudy,
+                      listOfData: fieldOfStudyList,
+                      callBack: !isEditable ? (_){} :(GeneralFireBaseList? newValue){
+                        setState(() {
+                          selectedFieldOfStudy = newValue ;
+                        });
+                      },
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 3,
+                    child: MyDropDownWidgetNumber(
+                      isEditable: isEditable ,
+                      // controller: _country,
+                      // title: "Field",
+                      selectedValue: selectedDurationYear,
+                      listOfData: durationYearList,
+                      callBack: !isEditable ? (_){} : (int? newValue){
+                        setState(() {
+                          selectedDurationYear = newValue ;
+                        });
+                      },
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 4,
+                    child: MyDropDownWidget(
+                      isRequired: true,
+                      isEditable: isEditable ,
+                      // controller: _country,
+                      title: "Duration",
+                      selectedValue: selectedDuration,
+                      listOfData: durationList,
+                      callBack: !isEditable ? (_){} : (GeneralFireBaseList? newValue){
+                        setState(() {
+                          selectedDuration = newValue ;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: size_H(20),),
+
+              /// Licenses & Certification
+              MyBtnSelector(
+                isRequired: true,
+                // controller: TextEditingController(),
+                title: "Licenses & Certification",
+                hint: "Add Licenses & Certification",
+                callback: !isEditable ? (){} : () {
+                  // LicensesOrCertificationFormPage
+                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => LicensesOrCertificationFormPage())).then((value) {
+                    if(value != null){
+                      value = value as LicensesOrCertification ;
+                      setState(() {
+                        licensesOrCertification.add(value);
+                      });
+                    } else{
+                      print("{value}_NULL");
+                    }
+                  });
+                },
+              ),
+              //educations
+              if(licensesOrCertification.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
+                  child: Column(
+                    children: List.generate(licensesOrCertification.length, (index) {
+                      LicensesOrCertification _licensesOrCertification = licensesOrCertification[index];
+                      return Container(
+                        height: size_H(40),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.s,
+                          children: [
+                            Expanded(child: Text("${index+1} - ${_licensesOrCertification.name}" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
+                            SizedBox(width: size_W(5),),
+                            GestureDetector(
+                                onTap: !isEditable ? (){} :  (){
+                                  // Confirmation
+                                  // 'Do you want to complete?'
+                                  MyConfirmationDialog().showConfirmationDialog(
+                                    context: context,
+                                    title: "Confirmation",
+                                    body: "Do you want to remove this licenses or certification?",
+                                    saveBtn: "Remove",
+                                    onSave: (){
+                                      setState(() {
+                                        licensesOrCertification.removeWhere((element) => element == _licensesOrCertification);
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Icon(Icons.remove_circle_outline_sharp))
+                          ],
+                        ),
+                      ) ;
+                    }),
+                  ),
+                ),
+
+              SizedBox(
+                height: size_H(20),
+              ),
+
+              MyBtnSelector(
+                // controller: TextEditingController(),
+                title: "Interests",
+                isRequired: true,
+                hint: "Add Interests",
+                callback:!isEditable ? (){} : () {
+                  // InterestFormPage
+                  Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => InterestFormPage(interests:interests))).then((value) {
+                    if(value != null){
+                      print("${value}");
+                      value = value as List<String> ;
+                      setState(() {
+                        interests = value! ;
+                      });
+                    } else{
+                      print("{value}_NULL");
+                    }
+                  });
+                },
+              ),
+              if(interests.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.s,
+                    children: [
+                      Expanded(child: Text("${interests.length} interests Added" ,maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(),)),
+                      SizedBox(width: size_W(5),),
+                      GestureDetector(
+                          onTap: !isEditable ? (){} : (){
+                            // Confirmation
+                            // 'Do you want to complete?'
+                            MyConfirmationDialog().showConfirmationDialog(
+                              context: context,
+                              title: "Confirmation",
+                              body: "Do you want to remove all interests?",
+                              saveBtn: "Remove",
+                              onSave: (){
+                                setState(() {
+                                  interests.clear();
+                                });
+                              },
+                            );
+                          },
+                          child: Icon(Icons.remove_circle_outline_sharp))
+                    ],
+                  ),
+                ),
+
+
+              SizedBox(height: size_H(20),),
+
+              Column(
+                children: [
+                  MyBtnSelector(
+                    // controller: TextEditingController(),
+                    title: "Upload CV",
+                    isRequired: true,
+                    hint: "Browse file",
+                    iconWidget: Image.asset(ImagePath.uploadIcon , scale: 6),
+                    callback: !isEditable ? (){} : () async {
+                      // _showActionSheet(context);
+
+                      final act = CupertinoActionSheet(
+                          actions: <Widget>[
                             Padding(
                               padding: const EdgeInsets.only(right: 8.0 , left: 8 ),
                               child: CupertinoActionSheetAction(
-                                child: Text('Remove Selected' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 ,  color: Theme_Information.Color_10)),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    filePathCV = null ;
-                                  });
+                                child: Text('Browse' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 , )),
+                                onPressed: () async {
+                                  String? path = await pickFile();
+                                  if (path != null) {
+                                    Navigator.pop(context);
+                                  }
                                 },
                               ),
-                            )
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                          child: Text('Cancel', style: ourTextStyle( fontSize: 15 , fontWeight: FontWeight.w500 , color: Theme_Information.Color_10)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ));
-                    showCupertinoModalPopup(
-                        context: context,
-                        builder: (BuildContext context) => act);
-
-
-
-                  },
-                ),
-                if(filePathCV != null)
-                  Padding(
-                    padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
-                    child: Container(
-                      height: size_H(40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(filePathCV!.isNotEmpty ? "My CV" : "" , style: ourTextStyle(),),
-                          GestureDetector(
-                              onTap: !isEditable ? (){} : (){
-                                // Confirmation
-                                // 'Do you want to complete?'
-                                MyConfirmationDialog().showConfirmationDialog(
-                                  context: context,
-                                  title: "Confirmation",
-                                  body: "Do you want to remove your CV?",
-                                  saveBtn: "Remove",
-                                  onSave: (){
+                            ),
+                            if(filePathCV != null)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0 , left: 8 ),
+                                child: CupertinoActionSheetAction(
+                                  child: Text('Remove Selected' , style: ourTextStyle(fontSize: 15 , fontWeight: FontWeight.w500 ,  color: Theme_Information.Color_10)),
+                                  onPressed: () {
+                                    Navigator.pop(context);
                                     setState(() {
                                       filePathCV = null ;
                                     });
                                   },
-                                );
-                              },
-                              child: Icon(Icons.remove_circle_outline_sharp))
-                        ],
+                                ),
+                              )
+                          ],
+                          cancelButton: CupertinoActionSheetAction(
+                            child: Text('Cancel', style: ourTextStyle( fontSize: 15 , fontWeight: FontWeight.w500 , color: Theme_Information.Color_10)),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ));
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (BuildContext context) => act);
+
+
+
+                    },
+                  ),
+                  if(filePathCV != null)
+                    Padding(
+                      padding: const EdgeInsets.only( right: 20.0 , left: 20.0 , top: 5),
+                      child: Container(
+                        height: size_H(40),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(filePathCV!.isNotEmpty ? "My CV" : "" , style: ourTextStyle(),),
+                            GestureDetector(
+                                onTap: !isEditable ? (){} : (){
+                                  // Confirmation
+                                  // 'Do you want to complete?'
+                                  MyConfirmationDialog().showConfirmationDialog(
+                                    context: context,
+                                    title: "Confirmation",
+                                    body: "Do you want to remove your CV?",
+                                    saveBtn: "Remove",
+                                    onSave: (){
+                                      setState(() {
+                                        filePathCV = null ;
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Icon(Icons.remove_circle_outline_sharp))
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-              ],
-            ),
+                    )
+                ],
+              ),
 
 
-            SizedBox(height: size_H(20),),
+              SizedBox(height: size_H(20),),
 
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -923,16 +954,51 @@ class _ProfilePageState extends State<ProfilePage> {
 
 
   void onWillPop(BuildContext context) {
-    MyConfirmationDialog().showConfirmationDialog(
-      context: context,
-      title: "Confirmation",
-      body: "If you go back, you'll lose data",
-      saveBtn: "Back",
-      onSave: (){
-        Navigator.of(context).pop();
-      },
-    );
+    if(isEditable){
+      MyConfirmationDialog().showConfirmationDialog(
+        context: context,
+        title: "Confirmation",
+        body: "If you go back, you'll lose data",
+        saveBtn: "Back",
+        onSave: (){
+          // Navigator.of(context).pop();
+           setState(() {
+             isEditable = !isEditable ;
+           });
+        },
+      );
+    } else{
+      Navigator.of(context).pop();
+    }
+
   }
+
+  bool isEmailExists({required String email}) {
+    for (UserProfile user in usersData) {
+      if (user.email == email) {
+        return true;
+      }
+    }
+    return false;
+  }
+  bool isIDExists({required String ID}) {
+    for (UserProfile user in usersData) {
+      if (user.id == ID) {
+        return true;
+      }
+    }
+    return false;
+  }
+  bool isPhoneNumberExists({required String phoneNumber}) {
+    for (UserProfile user in usersData) {
+      if (user.phoneNumber == phoneNumber) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
 
 
 }

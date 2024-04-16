@@ -44,7 +44,7 @@ class _MyDropDownWidgetValidatorState extends State<MyDropDownWidgetValidator> {
           ),
           SizedBox(height: size_H(10),),
           Container(
-            height: size_H(45),
+            // height: size_H(45),
             child: Center(
               child: IgnorePointer(
                 ignoring: !widget.isEditable!,

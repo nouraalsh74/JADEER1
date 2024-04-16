@@ -55,6 +55,7 @@ class _MyDropDownWidgetState extends State<MyDropDownWidget> {
                   dropdownColor: Theme_Information.Color_9,
                   padding: const EdgeInsets.only(right: 8 , left: 8),
                   underline: Container(),
+
                   value: widget.selectedValue,
                   onChanged: (GeneralFireBaseList? newValue) {
                     widget.callBack!(newValue);
@@ -62,7 +63,7 @@ class _MyDropDownWidgetState extends State<MyDropDownWidget> {
                   items: widget.listOfData!.map((GeneralFireBaseList value) {
                     return DropdownMenuItem<GeneralFireBaseList>(
                       value: value,
-                      child: Text("${value.name}" , style: ourTextStyle(color: Theme_Information.Color_5)),
+                      child: Text("${value.name}" ,maxLines: 5, style: ourTextStyle(color: Theme_Information.Color_5 , fontSize: 11)),
                     );
                   }).toList(),
                 ),

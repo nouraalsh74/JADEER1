@@ -556,7 +556,10 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       child: GestureDetector(
         onTap: (){
           // MentorDetailsPage
-          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: opportunity ,)));
+          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: opportunity , ))).then((value) async {
+            await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunityForApply("apply_opportunities");
+            setState(() {});
+          });
         },
         child: Card(
           shape: RoundedRectangleBorder(
@@ -632,10 +635,10 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
                       SizedBox(height: size_H(5),),
 
                       if(!isApplied(opportunity))
-                      Text("• Not Applied" , style: TextStyle(color: Theme_Information.Color_7 , fontSize: 9),),
+                      Text("• Not Applied" , style: ourTextStyle(color: Theme_Information.Color_7 , fontSize: 9),),
 
                       if(isApplied(opportunity))
-                        Text("* Applied" , style: ourTextStyle(fontSize: 10 , color: Theme_Information.Color_12),),
+                        Text("* Applied" , style: ourTextStyle(fontSize: 9 , color: Theme_Information.Color_12),),
 
 
                     ],
@@ -651,8 +654,10 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
   }
 
 
-  bool isSaved(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: false).isOpportunitySaved(opportunity: opportunity) == true;
-  bool isApplied(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: false).isOpportunityApplied(opportunity: opportunity) == true;
+  bool isSaved(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: true).isOpportunitySaved(opportunity: opportunity) == true;
+  bool isApplied(Opportunity opportunity) => Provider.of<OpportunityProvider>(context, listen: true).isOpportunityApplied(opportunity: opportunity) == true;
+
+
 
 
 

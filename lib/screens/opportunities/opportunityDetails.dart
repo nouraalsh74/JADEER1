@@ -34,11 +34,16 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   double myRate = 0.0 ;
   List<Courses> courses = [] ;
   bool? isApplied  ;
+  String? applyOpportunityIDN ;
   String? opportunityStatus  ;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    if( widget.applyOpportunityID  != null){
+      applyOpportunityIDN = widget.applyOpportunityID ;
+    }
+
     courses.addAll([
       Courses(id: "1" , title: "Microsoft Power BI Data Analyst Professional" , source: "coursera" , image: "https://cdn.icon-icons.com/icons2/2699/PNG/512/coursera_logo_icon_170320.png"  ),
       Courses(id: "2" , title: "Data Analysis with Pandas and Python" , source: "Udemy" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Udemy_logo.svg/2560px-Udemy_logo.svg.png"  ),
@@ -50,12 +55,17 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         setState(() {});
       }
     });
-    Provider.of<OpportunityProvider>(context, listen: false).isApplied(opportunity_id: widget.opportunity!.id, callBack: (bool? isAppliedN){
+    Provider.of<OpportunityProvider>(context, listen: false).isApplied(opportunity_id: widget.opportunity!.id, callBack: (bool? isAppliedN , String? applyID){
       if(isAppliedN != null){
         isApplied = isAppliedN ;
+        if( applyID  != null){
+          applyOpportunityIDN = applyID ;
+        }
         setState(() {});
         if(isApplied != null && isApplied == true){
           Provider.of<OpportunityProvider>(context, listen: false).getStatus(opportunity_id: widget.opportunity!.id, callBack: (String? status){
+            print("opportunityStatus ${status}");
+            print("opportunityStatus ${opportunityStatus}");
             if(status != null){
               opportunityStatus = status ;
               setState(() {});
@@ -173,9 +183,12 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                                               setState(() {});
                                             }
                                           });
-                                          await Provider.of<OpportunityProvider>(context, listen: false).isApplied(opportunity_id: widget.opportunity!.id, callBack: (bool? isAppliedN) {
+                                          await Provider.of<OpportunityProvider>(context, listen: false).isApplied(opportunity_id: widget.opportunity!.id, callBack: (bool? isAppliedN , String? applyID) {
                                             if (isAppliedN != null) {
                                               isApplied = isAppliedN;
+                                              if( applyID  != null){
+                                                applyOpportunityIDN = applyID ;
+                                              }
                                               setState(() {});
                                               if (isApplied != null &&
                                                   isApplied == true) {
@@ -613,8 +626,10 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   }
 
   void changeStatus(BuildContext context ,newStatus ) {
+
+
     Provider.of<OpportunityProvider>(context, listen: false).changeStatus(
-        apply_opportunity_id: widget.applyOpportunityID!,
+        apply_opportunity_id: applyOpportunityIDN!,
         newStatus: newStatus,
         callBack: (){
           EasyLoading.showSuccess("The opportunity status has been successfully changed");
