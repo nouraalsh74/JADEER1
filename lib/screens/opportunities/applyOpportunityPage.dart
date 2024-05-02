@@ -744,6 +744,9 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                   width: size_W(150),
                                   text: "Apply",
                                   callBack: (Function startLoading, Function stopLoading, ButtonState btnState) async {
+
+
+
                                     if (btnState == ButtonState.idle) {
 
                                         MyConfirmationDialog().showConfirmationDialog(
@@ -824,7 +827,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                                               await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunityForApply("apply_opportunities");
 
                                               if(widget.opportunity?.company_email != null && widget.opportunity!.company_email.isNotEmpty)
-                                              await sendEmail(context);
+                                              await sendEmail(context , userProfile.cvPath??"" , userProfile);
 
                                               stopLoading();
 
@@ -859,8 +862,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
     );
   }
 
-  sendEmail(BuildContext context //For showing snackbar
-      ) async {
+  sendEmail(BuildContext context, String CVPath , UserProfile user) async {
     String username = 'Jadeer.platform@gmail.com'; //Your Email
     String password = 'vjjl sfhr wdag jpad'; // 16 Digits App Password Generated From Google Account
 
@@ -872,7 +874,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
       ..from = Address(username, 'Jadeer APP')
       ..recipients.add('${widget.opportunity?.company_email}')
       ..subject = 'You have new apply'
-      ..text = 'Hello dear, I am sending you email from Flutter application'
+      ..text = _text(user)
     ;
 
     try {
@@ -886,6 +888,24 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
         print('Problem: ${p.code}: ${p.msg}');
       }
     }
+  }
+
+  String _text(UserProfile user) {
+    // return 'Hello dear, I am sending you email from Flutter application' ;
+    String body = '''
+       Hello dear, 
+       There is a user apply for your opportunity, 
+       this is some of information about it ,
+       Name : ${user.firstName} ${user.lastName},
+       Email : ${user.email},
+       Phone Number : ${user.phoneNumber},
+       Date of birth : ${user.dateOfBirth},
+       Skills : ${user.skills?.join(",")} ,
+       experience : ${user.experience?.name},
+       experience duration : ${user.experience?.numberOfYear} ${user.experience?.durationName},
+       CV Link : ${user.cvPath}
+    ''' ;
+    return body ;
   }
 
 

@@ -230,7 +230,18 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                               if(isApplied != null && isApplied == false)
                               Text("* Not Applied" , style: ourTextStyle(fontSize: 10),),
                               if(isApplied != null && isApplied == true)
-                                Text("* Applied" , style: ourTextStyle(fontSize: 10 , color: Theme_Information.Color_12),),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("* Applied " , style: ourTextStyle(fontSize: 10 , color: Theme_Information.Color_12),),
+                                    if(opportunityStatus != null && opportunityStatus! != "pending")
+                                    Text(" (${opportunityStatus?.toUpperCase()??""})" , style: ourTextStyle(fontSize: 10 , color: opportunityStatus  == "accept" ?
+                                        Theme_Information.Color_12 :
+                                    Theme_Information.Color_10
+                                    ),),
+                                  ],
+                                ),
+
                             ],
                           ),
                         ),
