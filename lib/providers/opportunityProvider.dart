@@ -87,6 +87,7 @@ class OpportunityProvider with ChangeNotifier{
           opportunityList.add(
               Opportunity(
                 id: document.data().toString().contains('id') ? document.get('id') : '',
+                company_email: document.data().toString().contains('company_email') ? document.get('company_email') : '',
                 company_image: document.data().toString().contains('company_image') ? document.get('company_image') : '',
                 title: document.data().toString().contains('title') ? document.get('title') : '',
                 industry: document.data().toString().contains('industry') ? document.get('industry') : '',
@@ -430,6 +431,7 @@ class OpportunityProvider with ChangeNotifier{
         .get();
     for (var Category in data.docs) {
       final data = MyAppliedOpportunity.fromJson(Category.data());
+      print("company_email ${data.opportunity?.company_email}");
       if(data.opportunity!.id == opportunity_id){
         isAppliedD = true ;
         appliedID = data.applyOpportunityID;
@@ -438,6 +440,7 @@ class OpportunityProvider with ChangeNotifier{
     }
     print("isAppliedD ${isAppliedD}");
     print("appliedID ${appliedID}");
+
     callBack(isAppliedD , appliedID);
   }
   getStatus({required String opportunity_id , required Function(String? status) callBack}) async {

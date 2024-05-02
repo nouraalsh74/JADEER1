@@ -93,6 +93,8 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       EasyLoading.show();
       opportunitiesBase.clear();
       opportunities.clear();
+      await Provider.of<OpportunityProvider>(context, listen: false).initOpportunity(context) ;
+
       opportunities = Provider.of<OpportunityProvider>(context, listen: false).opportunityList ;
       opportunitiesBase = opportunities ;
       await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , Provider.of<OpportunityProvider>(context, listen: false).myAppliedOpportunity);
@@ -588,13 +590,15 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
                             },
                           )),
                       SizedBox(width: size_W(10)),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("${opportunity.title}" , style: ourTextStyle(fontSize: 12,color: Theme_Information.Primary_Color, fontWeight: FontWeight.w600)),
-                          Text("${opportunity.company}" , style: ourTextStyle(fontSize: 9 ,color: Theme_Information.Primary_Color ,  fontWeight: FontWeight.w400)),
-                          Text("${opportunity.location}" , style: ourTextStyle(fontSize: 9 ,color: Theme_Information.Primary_Color ,  fontWeight: FontWeight.w400)),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("${opportunity.title}" , maxLines: 1 , overflow: TextOverflow.ellipsis , style: ourTextStyle(fontSize: 12,color: Theme_Information.Primary_Color, fontWeight: FontWeight.w600)),
+                            Text("${opportunity.company}" , style: ourTextStyle(fontSize: 9 ,color: Theme_Information.Primary_Color ,  fontWeight: FontWeight.w400)),
+                            Text("${opportunity.location}" , style: ourTextStyle(fontSize: 9 ,color: Theme_Information.Primary_Color ,  fontWeight: FontWeight.w400)),
+                          ],
+                        ),
                       ),
                     ],
                   ),

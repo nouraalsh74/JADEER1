@@ -6,12 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/configuration/theme.dart';
 import 'package:flutter_application_2/screens/home/homePage.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:loading_btn/loading_btn.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
 
 import '../../commonWidgets/myLoadingBtn.dart';
 import '../../configuration/images.dart';
+import '../../main.dart';
 import '../../models/opportunityModel.dart';
 import '../../models/mentorsModel.dart';
 import '../../models/userProfileModel.dart';
@@ -102,6 +104,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
     );
   }
+
+
+
   Future<void> checkUserLoginStatus(stopLoading) async {
     User? user = FirebaseAuth.instance.currentUser;
 

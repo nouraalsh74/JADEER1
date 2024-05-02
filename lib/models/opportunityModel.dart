@@ -9,12 +9,14 @@ class Opportunity {
   String company_image;
   String availability;
   String deadline;
+  String company_email;
   String opportunity_type;
 
   Opportunity({
     required this.title,
     required this.industry,
     required this.id,
+    required this.company_email,
     required this.company,
     required this.description,
     required this.requirements,
@@ -29,6 +31,7 @@ class Opportunity {
     return Opportunity(
       title: json['title'],
       industry: json['industry'],
+      company_email: json['company_email'] ?? "",
       id: json['id'],
       company: json['company'],
       description: json['description'],
@@ -45,6 +48,7 @@ class Opportunity {
     return {
       'title': title,
       'industry': industry,
+      'company_email': company_email,
       'id': id,
       'company': company,
       'description': description,

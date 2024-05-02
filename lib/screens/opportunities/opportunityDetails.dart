@@ -40,6 +40,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     if( widget.applyOpportunityID  != null){
       applyOpportunityIDN = widget.applyOpportunityID ;
     }
@@ -74,6 +75,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         }
       }
     });
+    print("opportunityStatus ${widget.opportunity!.company_email}");
   }
 
   Future<void> getShareLink(BuildContext context) async {

@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:provider/provider.dart';
 
 import '../../commonWidgets/backIcon.dart';
@@ -109,6 +111,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("company_email ${widget.opportunity?.company_email}");
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -820,8 +823,8 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
 
                                               await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunityForApply("apply_opportunities");
 
-
-
+                                              if(widget.opportunity?.company_email != null && widget.opportunity!.company_email.isNotEmpty)
+                                              await sendEmail(context);
 
                                               stopLoading();
 
@@ -855,6 +858,36 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
       ),
     );
   }
+
+  sendEmail(BuildContext context //For showing snackbar
+      ) async {
+    String username = 'Jadeer.platform@gmail.com'; //Your Email
+    String password = 'vjjl sfhr wdag jpad'; // 16 Digits App Password Generated From Google Account
+
+
+    final smtpServer = gmail(username, password);
+
+    // Create our message.
+    final message = Message()
+      ..from = Address(username, 'Jadeer APP')
+      ..recipients.add('${widget.opportunity?.company_email}')
+      ..subject = 'You have new apply'
+      ..text = 'Hello dear, I am sending you email from Flutter application'
+    ;
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+      // EasyLoading.showSuccess("Done");
+    } on MailerException catch (e) {
+      print('Message not sent.');
+      print(e.message);
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+    }
+  }
+
 
   Icon iconWidget(List data) {
     return !data.isNotEmpty ?
