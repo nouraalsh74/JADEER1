@@ -14,6 +14,7 @@ import '../../configuration/theme.dart';
 import '../../models/opportunityModel.dart';
 import '../../providers/dataProvider.dart';
 import '../../providers/opportunityProvider.dart';
+import '../../providers/userProvider.dart';
 import 'opportunityDetails.dart';
 
 class OpportunitiesDashboard extends StatefulWidget {
@@ -129,7 +130,14 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       selectedOpportunityTypeChip = allOpportunityTypeChips.first ;
 
 
-
+      // opportunities = Provider.of<OpportunityProvider>(context, listen: false).opportunityList ;
+      // opportunitiesBase = opportunities ;
+      await sortData(context , opportunities, (List<Opportunity> newData){
+        opportunities.clear() ;
+        opportunitiesBase.clear() ;
+        opportunities = newData ;
+        opportunitiesBase = List.from(opportunities);
+      });
 
       setState(() {});
       EasyLoading.dismiss();
@@ -558,7 +566,7 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       child: GestureDetector(
         onTap: (){
           // MentorDetailsPage
-          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: opportunity , ))).then((value) async {
+          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: opportunity ,similarity: opportunity.similarity, ))).then((value) async {
             await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunityForApply("apply_opportunities");
             setState(() {});
           });
@@ -664,5 +672,91 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
 
 
 
+}
 
+/// calculateSimilarity
+
+Future sortData(context , List<Opportunity> data , Function(List<Opportunity> data) callBack) async {
+  // User information
+  // List<String> userSkill = ['Analytical Thinking', 'Communication', 'Adaptability'];
+  // List<String> userIntereset =['Leadership', 'Communication', 'Adaptability'];
+  List<String> userSkill = Provider.of<UserProvider>(context, listen: false).userProfile?.skills??[] ;
+  List<String> userInterests = Provider.of<UserProvider>(context, listen: false).userProfile?.interests??[] ;
+  List<String> userFieldsOfStudy = [Provider.of<UserProvider>(context, listen: false).userProfile!.experience!.name!];
+
+
+  List<String> userSkills = userSkill + userInterests;
+  // print(userSkills);
+  // List<String> userFieldsOfStudy = ['Computer Science'];
+
+  // Calculate job similarity scores
+  List<JobSimilarity> jobSimilarities = calculateJobSimilarities(userSkills, userFieldsOfStudy, data);
+
+  // Sort jobs based on similarity scores in descending order
+  jobSimilarities.sort((a, b) => b.similarity.compareTo(a.similarity));
+
+
+  callBack(jobSimilarities.map((jobSimilarity) => jobSimilarity.job).toList());
+
+  // Print job similarity scores
+  for (var similarity in jobSimilarities) {
+    print('Job ID: ${similarity.job.id} - Similarity: ${similarity.similarity.toStringAsFixed(2)}%');
+  }
+}
+
+
+class JobSimilarity {
+  final Opportunity job;
+  final double similarity;
+
+  JobSimilarity({required this.job, required this.similarity});
+}
+
+List<JobSimilarity> calculateJobSimilarities(
+    List<String> userSkills, List<String> userFieldsOfStudy, List<Opportunity> jobs) {
+  List<JobSimilarity> jobSimilarities = [];
+
+  for (var job in jobs) {
+    double similarity = calculateSimilarity(userSkills, userFieldsOfStudy, job.skills??[], job.fieldsOfStudy??[]);
+    job.similarity = "$similarity" ;
+    jobSimilarities.add(JobSimilarity(job: job, similarity: similarity));
+  }
+
+  return jobSimilarities;
+}
+
+double calculateSimilarity(
+    List<String> userSkills, List<String> userFieldsOfStudy, List<String> jobSkills, List<String> jobFieldsOfStudy) {
+  double skillSimilarity = calculateSkillSimilarity(userSkills, jobSkills);
+  double fieldOfStudySimilarity = calculateFieldOfStudySimilarity(userFieldsOfStudy, jobFieldsOfStudy);
+
+  // You can adjust the weights for skill similarity and field of study similarity based on your requirements
+  double similarity = (0.3 * skillSimilarity) + (0.7 * fieldOfStudySimilarity);
+
+  return similarity;
+}
+
+double calculateSkillSimilarity(List<String> userSkills, List<String> jobSkills) {
+  // Convert the skills to sets to remove duplicates
+  Set<String> userSkillSet = userSkills.toSet();
+  Set<String> jobSkillSet = jobSkills.toSet();
+
+  // Calculate the intersection of skills
+  Set<String> commonSkills = userSkillSet.intersection(jobSkillSet);
+
+  // Calculate the Jaccard similarity coefficient
+  double similarity = commonSkills.length / (userSkillSet.length + jobSkillSet.length - commonSkills.length);
+
+  return similarity;
+}
+
+double calculateFieldOfStudySimilarity(List<String> userFieldsOfStudy, List<String> jobFieldsOfStudy) {
+  // Check if there is any common field of study
+  bool hasCommonFieldOfStudy = userFieldsOfStudy.any((userField) => jobFieldsOfStudy.contains(userField));
+
+  if (hasCommonFieldOfStudy) {
+    return 1.0;
+  } else {
+    return 0.0;
+  }
 }

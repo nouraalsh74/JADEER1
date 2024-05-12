@@ -19,7 +19,26 @@ class InterestFormPage extends StatefulWidget {
 class _InterestFormPageState extends State<InterestFormPage> {
   TextEditingController _interestController = TextEditingController();
   List<String> _interests = [];
-  List<String> _interestsSuggestions = ["Graphic Design" , "UI/UX" ,] ;
+  List<String> _interestsSuggestions = [
+    "Programming languages",
+    "Data analysis",
+    "Project management",
+    "Graphic design",
+    "Digital marketing",
+    "Financial analysis",
+    "Software development",
+    "Database management",
+    "Network administration",
+    "Web development",
+    "Cybersecurity",
+    "Data modeling",
+    "Statistical analysis",
+    "Content management systems",
+    "Quality assurance and testing",
+    "User experience design",
+    "Cloud computing",
+    "Machine learning",
+  ];
 
   @override
   void initState() {

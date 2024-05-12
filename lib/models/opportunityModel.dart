@@ -1,10 +1,13 @@
 class Opportunity {
   String title;
   String id;
+  String? similarity;
   String industry;
   String company;
   String description;
   List<String> requirements;
+  List<String>? fieldsOfStudy;
+  List<String>? skills;
   String location;
   String company_image;
   String availability;
@@ -17,9 +20,12 @@ class Opportunity {
     required this.industry,
     required this.id,
     required this.company_email,
+    required this.requirements,
+    this.skills,
+    this.similarity,
     required this.company,
     required this.description,
-    required this.requirements,
+    this.fieldsOfStudy,
     required this.company_image,
     required this.availability,
     required this.location,
@@ -36,6 +42,8 @@ class Opportunity {
       company: json['company'],
       description: json['description'],
       requirements: List<String>.from(json['requirements']),
+      fieldsOfStudy: json['field_of_study'] != null ? List<String>.from(json['field_of_study']) : [],
+      skills: json['skills'] != null ?List<String>.from(json['skills']) : [],
       location: json['location'],
       company_image: json['company_image'],
       availability: json['availability'],
@@ -53,6 +61,8 @@ class Opportunity {
       'company': company,
       'description': description,
       'requirements': requirements,
+      'skills': skills,
+      'fieldsOfStudy': fieldsOfStudy,
       'location': location,
       'company_image': company_image,
       'availability': availability,

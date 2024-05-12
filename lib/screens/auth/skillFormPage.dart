@@ -20,12 +20,39 @@ class _SkillFormPageState extends State<SkillFormPage> {
   TextEditingController _skillController = TextEditingController();
   List<String> _skills = [];
   List<String> _skillsSuggestions = [
-    "Java" ,
-    "MySQL" ,
-    "Accounting" ,
-    "Data Analysis" ,
-    "C++" ,
-    "Database Administration" ,
+    "Problem-solving",
+    "Critical thinking",
+    "Adaptability",
+    "Time management",
+    "Leadership",
+    "Creativity",
+    "Emotional intelligence",
+    "Analytical skills",
+    "Attention to detail",
+    "Decision-making",
+    "Flexibility",
+    "Organization",
+    "Customer service",
+    "Networking",
+    "Teamwork"
+    "Programming languages",
+    "Data analysis",
+    "Project management",
+    "Graphic design",
+    "Digital marketing",
+    "Financial analysis",
+    "Software development",
+    "Database management",
+    "Network administration",
+    "Web development",
+    "Cybersecurity",
+    "Data modeling",
+    "Statistical analysis",
+    "Content management systems",
+    "Quality assurance and testing",
+    "User experience design",
+    "Cloud computing",
+    "Machine learning"
   ] ;
 
   @override

@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:share_plus/share_plus.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/commonWidgets/myBtnSelector.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,12 +18,14 @@ import '../../configuration/theme.dart';
 import '../../models/coursesModel.dart';
 import '../../models/opportunityModel.dart';
 import '../../providers/opportunityProvider.dart';
+import '../../providers/userProvider.dart';
 import 'applyOpportunityPage.dart';
 
 class OpportunityDetailsPage extends StatefulWidget {
-  const OpportunityDetailsPage({Key? key , this.opportunity, this.applyOpportunityID}) : super(key: key);
+  const OpportunityDetailsPage({Key? key , this.opportunity, this.applyOpportunityID , this.similarity}) : super(key: key);
   final Opportunity? opportunity ;
   final String? applyOpportunityID ;
+  final String? similarity ;
   @override
   State<OpportunityDetailsPage> createState() => _OpportunityDetailsPageState();
 }
@@ -40,6 +43,21 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    ///
+
+    List<String> userSkill = Provider.of<UserProvider>(context, listen: false).userProfile?.skills??[] ;
+    List<String> licensesOrCertification = Provider.of<UserProvider>(context, listen: false).userProfile!.licensesOrCertifications!.map((data) => data.name!).toList();
+    final userData = {
+      'licensesOrCertification': licensesOrCertification,
+      'skills': userSkill,
+    };
+
+    String jobDescription = 'Junior Data Analyst Job Description:\n\nResponsibilities:\n- Collect, analyze, and interpret data for insights.\n- Assist in database management and data cleaning.\n- Create reports and visualizations to communicate findings.\n- Collaborate with teams to support data-driven decision-making.\n- Stay updated on data analysis techniques and tools.\n\nRequirements:\n- Bachelor\'s degree in data science, statistics, or related field.\n- Proficiency in SQL, Excel, or Python.\n- Strong analytical and problem-solving skills.\n- Attention to detail and ability to work with large datasets.\n- Effective communication and teamwork skills.';
+
+    sendJobRecommendationRequest(userData, jobDescription);
+
+    ///
 
     if( widget.applyOpportunityID  != null){
       applyOpportunityIDN = widget.applyOpportunityID ;
@@ -344,7 +362,8 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text("Fit assessment" , style: ourTextStyle(fontSize: 14, color: Theme_Information.Primary_Color , fontWeight: FontWeight.w600)),
-                            Text("94% Match" , style: ourTextStyle(fontSize: 11, color: Theme_Information.Color_12 , fontWeight: FontWeight.w600)),
+                            if(widget.similarity != null)
+                            Text("${widget.similarity}% Match" , style: ourTextStyle(fontSize: 11, color: Theme_Information.Color_12 , fontWeight: FontWeight.w600)),
                           ],
                         ),
                         SizedBox(height: size_H(5),),
@@ -712,4 +731,63 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
     }
 
   }
+
+
+
+  Future<Map<String, dynamic>> sendChatGPTRequest(
+      Map<String, dynamic> data, String jobDescription) async {
+    final apiUrl = 'https://api.openai.com/v1/completions';  // Replace with the correct API endpoint for GPT-3
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+        'Bearer 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', // Replace with your OpenAI API key
+      },
+      body: jsonEncode(data),
+    );
+
+    print("dddd_ ${response.statusCode}");
+    print("dddd_ ${response.body}");
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to send API request.');
+    }
+  }
+
+  void processAPIResponse(Map<String, dynamic> response) {
+    final jobRecommendations = response['jobRecommendations'];
+    final match = response['match'];
+    print(match );
+
+    // Display
+    // ...
+  }
+
+  Future<void> sendJobRecommendationRequest(
+      Map<String, dynamic> userData, String jobDescription) async {
+    final userQuestion = 'Match between user qualifications and job description: $jobDescription';
+
+    final requestData = {
+      'userData': userData,
+      'question': userQuestion,
+    };
+
+    try {
+      final apiResponse = await sendChatGPTRequest(requestData, jobDescription);
+      print(apiResponse);
+      //print(apiResponse.statusCode);
+
+      processAPIResponse(apiResponse);
+    } catch (e) {
+      print(e);
+      print('erroooooooooooor');
+      // Handle errors
+    }
+  }
+
+
+
 }

@@ -864,7 +864,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
 
   sendEmail(BuildContext context, String CVPath , UserProfile user) async {
     String username = 'Jadeer.platform@gmail.com'; //Your Email
-    String password = 'vjjl sfhr wdag jpad'; // 16 Digits App Password Generated From Google Account
+    String password = 'owsh uqni pimn grbt'; // 16 Digits App Password Generated From Google Account
 
 
     final smtpServer = gmail(username, password);

@@ -57,9 +57,9 @@ class _LoginPageState extends State<LoginPage> {
             title: "Password",
             hint: "Enter Password",
           ),
-          SizedBox(height: size_H(10),),
-          InkWell(onTap: (){},
-              child: Text("Forget your password?", style: ourTextStyle(color: Theme_Information.Primary_Color, fontSize: 12, fontWeight: FontWeight.w500),)),
+          // SizedBox(height: size_H(10),),
+          // InkWell(onTap: (){},
+          //     child: Text("Forget your password?", style: ourTextStyle(color: Theme_Information.Primary_Color, fontSize: 12, fontWeight: FontWeight.w500),)),
 
           SizedBox(height: size_H(20),),
           MyLoadingBtn(

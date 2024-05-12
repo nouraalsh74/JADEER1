@@ -10,6 +10,7 @@ import '../../models/opportunityModel.dart';
 import '../../models/savedOpportunityModel.dart';
 import '../../providers/dataProvider.dart';
 import '../../providers/opportunityProvider.dart';
+import 'opportunitiesDashboard.dart';
 import 'opportunityDetails.dart';
 
 class SavedOpportunities extends StatefulWidget {
@@ -36,6 +37,10 @@ class _SavedOpportunitiesState extends State<SavedOpportunities> {
       savedOpportunities.clear();
       savedOpportunities =  Provider.of<OpportunityProvider>(context, listen: false).savedOpportunityList;
       // await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreSavedOpportunity("saved_opportunities" , savedOpportunities);
+
+      await sortData(context , savedOpportunities.map((job) => job.opportunity!).toList(),  (List<Opportunity> newData){});
+
+
       setState(() {});
       EasyLoading.dismiss();
     });
@@ -118,7 +123,10 @@ class _SavedOpportunitiesState extends State<SavedOpportunities> {
       child: GestureDetector(
         onTap: (){
           // MentorDetailsPage
-          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(opportunity: savedOpportunity.opportunity ,)));
+          Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(
+            opportunity: savedOpportunity.opportunity ,
+            similarity: savedOpportunity.opportunity?.similarity ,
+          )));
         },
         child: Card(
           shape: RoundedRectangleBorder(

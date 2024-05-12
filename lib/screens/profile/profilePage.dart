@@ -226,6 +226,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       "Please select at least 3 interest");
                   return;
                 }
+                else if (isEmailExists(email: _email.text)) {
+                  EasyLoading.showError("Email is exists!");
+                  return;
+                } else if (isPhoneNumberExists(phoneNumber: "+966${_phoneNumber.text}")) {
+                  EasyLoading.showError("Phone Number is exists!");
+                  return;
+                } else if (isIDExists(ID: _id.text)) {
+                  EasyLoading.showError("ID is exists!");
+                  return;
+                }
                 //    if (filePathCV != filePathCVBase) {
 
 

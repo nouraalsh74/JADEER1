@@ -14,6 +14,7 @@ import '../../models/opportunityModel.dart';
 import '../../models/savedOpportunityModel.dart';
 import '../../providers/dataProvider.dart';
 import '../../providers/opportunityProvider.dart';
+import 'opportunitiesDashboard.dart';
 import 'opportunityDetails.dart';
 
 class MyApplyOpportunity extends StatefulWidget {
@@ -39,6 +40,9 @@ class _MyApplyOpportunityState extends State<MyApplyOpportunity> {
       myApplyOpportunity.clear();
       await Provider.of<OpportunityProvider>(context, listen: false).fetchDataFromFirestoreMyOpportunity("apply_opportunities" , myApplyOpportunity);
       _filteredOpportunities = myApplyOpportunity ;
+
+      await sortData(context , _filteredOpportunities.map((job) => job.opportunity!).toList(),  (List<Opportunity> newData){});
+
       setState(() {});
       EasyLoading.dismiss();
     });
@@ -157,6 +161,7 @@ class _MyApplyOpportunityState extends State<MyApplyOpportunity> {
         onTap: (){
           Navigator.push(context, MyCustomRoute(builder: (BuildContext context) => OpportunityDetailsPage(
             opportunity: savedOpportunity.opportunity ,
+             similarity: savedOpportunity.opportunity?.similarity,
              applyOpportunityID: savedOpportunity.applyOpportunityID,)));
         },
         child: Card(
