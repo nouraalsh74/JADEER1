@@ -743,7 +743,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
       headers: {
         'Content-Type': 'application/json',
         'Authorization':
-        'Bearer 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', // Replace with your OpenAI API key
+        'Bearer ddddddddd', // Replace with your OpenAI API key
       },
       body: jsonEncode(data),
     );
