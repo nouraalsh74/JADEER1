@@ -11,6 +11,7 @@ class Opportunity {
   String location;
   String company_image;
   String availability;
+  List<String> courses;
   String deadline;
   String company_email;
   String opportunity_type;
@@ -18,6 +19,7 @@ class Opportunity {
   Opportunity({
     required this.title,
     required this.industry,
+    required this.courses,
     required this.id,
     required this.company_email,
     required this.requirements,
@@ -36,6 +38,7 @@ class Opportunity {
   factory Opportunity.fromJson(Map<String, dynamic> json) {
     return Opportunity(
       title: json['title'],
+      courses: json["courses"] == null ? [] : List<String>.from(json["courses"]!.map((x) => x)),
       industry: json['industry'],
       company_email: json['company_email'] ?? "",
       id: json['id'],
@@ -54,6 +57,7 @@ class Opportunity {
 
   Map<String, dynamic> toMap() {
     return {
+      "courses": courses == null ? [] : List<dynamic>.from(courses!.map((x) => x)),
       'title': title,
       'industry': industry,
       'company_email': company_email,

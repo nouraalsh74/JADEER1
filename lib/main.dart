@@ -22,7 +22,7 @@ void main() async {
   ///
   /// /Users/mohmmedmalas/Desktop/flutter_3.16.0/bin/flutter --no-color pub get
   /// /Users/mohmmedmalas/Desktop/flutter_3.16.0/bin/flutter pub add pie_chart
-  /// /Users/mohmmedmalas/Desktop/flutter_3.16.0/bin/flutter pub add mailer
+  /// /Users/mohmmedmalas/Desktop/flutter_3.16.0/bin/flutter pub add url_launcher
   ///
   ///
 

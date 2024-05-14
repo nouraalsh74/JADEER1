@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:loading_btn/loading_btn.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../commonWidgets/backIcon.dart';
 import '../../commonWidgets/myConfirmationDialog.dart';
@@ -17,6 +18,7 @@ import '../../configuration/images.dart';
 import '../../configuration/theme.dart';
 import '../../models/coursesModel.dart';
 import '../../models/opportunityModel.dart';
+import '../../providers/dataProvider.dart';
 import '../../providers/opportunityProvider.dart';
 import '../../providers/userProvider.dart';
 import 'applyOpportunityPage.dart';
@@ -35,7 +37,8 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
   bool showAllLinesRequirements = false;
   bool showAllLinesCourses = false;
   double myRate = 0.0 ;
-  List<Courses> courses = [] ;
+  List<Courses> myCourses = [] ;
+  List<Courses> allCourses = [] ;
   bool? isApplied  ;
   String? applyOpportunityIDN ;
   String? opportunityStatus  ;
@@ -45,17 +48,29 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
     super.initState();
 
     ///
+    Future.delayed(Duration.zero, () async {
+     await Provider.of<DataProvider>(context, listen: false).fetchDataFromFirestoreCourses("courses" , allCourses);
+     for (int i = 0; i < allCourses.length; i++) {
+       widget.opportunity!.courses.forEach((element) {
+         if(element.toString().trim() == allCourses[i].id.toString()){
+           myCourses.add(allCourses[i]);
+         }
+       });
+     }
 
-    List<String> userSkill = Provider.of<UserProvider>(context, listen: false).userProfile?.skills??[] ;
-    List<String> licensesOrCertification = Provider.of<UserProvider>(context, listen: false).userProfile!.licensesOrCertifications!.map((data) => data.name!).toList();
-    final userData = {
-      'licensesOrCertification': licensesOrCertification,
-      'skills': userSkill,
-    };
+     print("myCourses ${myCourses.length}");
+     setState(() {});
+    });
 
-    String jobDescription = 'Junior Data Analyst Job Description:\n\nResponsibilities:\n- Collect, analyze, and interpret data for insights.\n- Assist in database management and data cleaning.\n- Create reports and visualizations to communicate findings.\n- Collaborate with teams to support data-driven decision-making.\n- Stay updated on data analysis techniques and tools.\n\nRequirements:\n- Bachelor\'s degree in data science, statistics, or related field.\n- Proficiency in SQL, Excel, or Python.\n- Strong analytical and problem-solving skills.\n- Attention to detail and ability to work with large datasets.\n- Effective communication and teamwork skills.';
 
-    sendJobRecommendationRequest(userData, jobDescription);
+    // List<String> userSkill = Provider.of<UserProvider>(context, listen: false).userProfile?.skills??[] ;
+    // List<String> licensesOrCertification = Provider.of<UserProvider>(context, listen: false).userProfile!.licensesOrCertifications!.map((data) => data.name!).toList();
+    // final userData = {
+    //   'licensesOrCertification': licensesOrCertification,
+    //   'skills': userSkill,
+    // };
+    // String jobDescription = 'Junior Data Analyst Job Description:\n\nResponsibilities:\n- Collect, analyze, and interpret data for insights.\n- Assist in database management and data cleaning.\n- Create reports and visualizations to communicate findings.\n- Collaborate with teams to support data-driven decision-making.\n- Stay updated on data analysis techniques and tools.\n\nRequirements:\n- Bachelor\'s degree in data science, statistics, or related field.\n- Proficiency in SQL, Excel, or Python.\n- Strong analytical and problem-solving skills.\n- Attention to detail and ability to work with large datasets.\n- Effective communication and teamwork skills.';
+    // sendJobRecommendationRequest(userData, jobDescription);
 
     ///
 
@@ -63,11 +78,11 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
       applyOpportunityIDN = widget.applyOpportunityID ;
     }
 
-    courses.addAll([
-      Courses(id: "1" , title: "Microsoft Power BI Data Analyst Professional" , source: "coursera" , image: "https://cdn.icon-icons.com/icons2/2699/PNG/512/coursera_logo_icon_170320.png"  ),
-      Courses(id: "2" , title: "Data Analysis with Pandas and Python" , source: "Udemy" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Udemy_logo.svg/2560px-Udemy_logo.svg.png"  ),
-      Courses(id: "3" , title: "Professional Certificate in Data analyst" , source: "edX" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/EdX_newer_logo.svg/2560px-EdX_newer_logo.svg.png"  ),
-    ]);
+    // courses.addAll([
+    //   Courses(id: "1" , name: "Microsoft Power BI Data Analyst Professional" , link: "coursera" , image: "https://cdn.icon-icons.com/icons2/2699/PNG/512/coursera_logo_icon_170320.png"  ),
+    //   Courses(id: "2" , name: "Data Analysis with Pandas and Python" , link: "Udemy" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Udemy_logo.svg/2560px-Udemy_logo.svg.png"  ),
+    //   Courses(id: "3" , name: "Professional Certificate in Data analyst" , link: "edX" , image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/EdX_newer_logo.svg/2560px-EdX_newer_logo.svg.png"  ),
+    // ]);
     Provider.of<OpportunityProvider>(context, listen: false).getRate(opportunity_id: widget.opportunity!.id, callBack: (double? rate){
       if(rate != null){
         myRate = rate ;
@@ -432,74 +447,87 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                   SizedBox(height: size_H(10),),
 
                   Padding(
-                    padding: EdgeInsets.only(top: size_H(5) , bottom: size_H(5), right: size_W(40) , left: size_W(40)),
+                    padding: EdgeInsets.only(top: size_H(5) , bottom: size_H(5), right: size_W(20) , left: size_W(20)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Recommended courses" , style: ourTextStyle(fontSize: 14, color: Theme_Information.Primary_Color , fontWeight: FontWeight.w600)),
                         SizedBox(height: size_H(5),),
                         Column(
-                          children: List.generate((showAllLinesCourses || courses.length < 2)
-                                  ? courses.length
+                          children: List.generate((showAllLinesCourses || myCourses.length < 2)
+                                  ? myCourses.length
                                       : 2, (index) {
-                            final item = courses[index] ;
+                            final item = myCourses[index] ;
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 8.0 ),
-                                        child: Image.network(
-                                          '${item.image}',
-                                          width: size_H(80),
-                                          height: size_H(60),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                item.title,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: ourTextStyle(fontSize: 11 , color: Theme_Information.Primary_Color , fontWeight: FontWeight.w600),
-                                              ),
-                                              Text(
-                                                item.source,
-                                                style: ourTextStyle(fontSize: 11 , color: Theme_Information.Color_7 , fontWeight: FontWeight.w700),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                  Image.asset("${ImagePath.show_details}" , scale: 3,),
-                                                ],
-                                              )
-                                            ],
+                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                              child: InkWell(
+                                onTap: () async {
+                                  await launchUrl(Uri.parse("${item.link}") , mode:LaunchMode.externalApplication );
+                                },
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 3.0 ),
+                                          child: ClipRRect(
+                                              borderRadius: BorderRadius.all(Radius.circular(100)),
+                                            child: Image.network(
+                                              '${item.image}',
+                                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace,){
+                                                return Image.network("https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg" ,
+                                                  width: size_H(80),
+                                                  height: size_H(60),
+                                                  fit: BoxFit.cover,
+                                                );
+                                              },
+                                              width: size_H(80),
+                                              height: size_H(60),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                              height: size_H(50),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      item.name,
+                                                      maxLines: 3,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: ourTextStyle(fontSize: 11 , color: Theme_Information.Primary_Color , fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: [
+                                                      Image.asset("${ImagePath.show_details}" , scale: 3,),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             );
                           }),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: Text("${widget.opportunity!.requirements}" , maxLines: showAllLinesRequirements ? 70 : 2 , overflow: TextOverflow.ellipsis   ,style: ourTextStyle(fontSize: 12, color: Theme_Information.Primary_Color)),
-                        // ),
-
+                        if(myCourses.length > 2)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -708,7 +736,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                         width: size_W(25),
                         child: Image.asset( image, scale: 4)),
                     SizedBox(width: size_W(5),),
-                    Text(title , style: ourTextStyle(fontSize: 11 ,fontWeight: FontWeight.w600 , color: Theme_Information.Primary_Color)),
+                    Expanded(child: Text(title , style: ourTextStyle(fontSize: 11 ,fontWeight: FontWeight.w600 , color: Theme_Information.Primary_Color))),
                   ],
                 ),
     );

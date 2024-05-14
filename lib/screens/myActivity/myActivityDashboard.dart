@@ -32,10 +32,10 @@ class _MyActivityDashboardState extends State<MyActivityDashboard> {
   double? percentageChangeTotalApplications ;
   double? percentageAcceptedNow  ;
   Map<String, double> dataMap = {
-    "Information Technology": 0,
-    "Healthcare": 0,
-    "Finance & Banking": 0,
-    "Hospitality": 0,
+    "Technology": 0,
+    "Finance & Accounting": 0,
+    "Marketing": 0,
+    "Human Resources": 0,
     "Engineering": 0,
     "Others": 0,
   };
@@ -87,16 +87,16 @@ class _MyActivityDashboardState extends State<MyActivityDashboard> {
   }
 
   Future getIndustryChartData()  async {
-    dataMap["Information Technology"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Technology".toLowerCase())).toList()).length).toDouble() ;
-    dataMap["Healthcare"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Healthcare".toLowerCase())).toList()).length).toDouble() ;
-    dataMap["Finance & Banking"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Finance".toLowerCase())).toList()).length).toDouble() ;
-    dataMap["Hospitality"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Hospitality".toLowerCase())).toList()).length).toDouble() ;
+    dataMap["Technology"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Technology".toLowerCase())).toList()).length).toDouble() ;
+    dataMap["Finance & Accounting"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Finance & Accounting".toLowerCase())).toList()).length).toDouble() ;
+    dataMap["Marketing"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Marketing".toLowerCase())).toList()).length).toDouble() ;
+    dataMap["Human Resources"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Human Resources".toLowerCase())).toList()).length).toDouble() ;
     dataMap["Engineering"] = ((myApplyOpportunityNow.where((element) => element.opportunity!.industry.toLowerCase().contains("Engineering".toLowerCase())).toList()).length).toDouble() ;
 
-    double total = dataMap["Information Technology"]!
-        + dataMap["Healthcare"]!
-        + dataMap["Finance & Banking"]!
-        + dataMap["Hospitality"]!
+    double total = dataMap["Technology"]!
+        + dataMap["Finance & Accounting"]!
+        + dataMap["Marketing"]!
+        + dataMap["Human Resources"]!
         + dataMap["Engineering"]!;
     dataMap["Others"] = myApplyOpportunityNow.length.toDouble() - total ;
   }

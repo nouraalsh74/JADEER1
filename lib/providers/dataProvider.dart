@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../models/coursesModel.dart';
 import '../models/opportunityModel.dart';
 import '../models/generalListFireBase.dart';
 import '../models/mentorsModel.dart';
@@ -47,6 +48,33 @@ class DataProvider with ChangeNotifier{
           if (name != null && id != null) {
             _list.add(GeneralFireBaseList(name: name  , id: id));
           }
+        }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future fetchDataFromFirestoreCourses(String collectionName , List<Courses> _list) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      QuerySnapshot querySnapshot =
+      await firestore.collection(collectionName).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot document in querySnapshot.docs) {
+          // Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
+          // String? name = data?['name'] as String?;
+          // String? id = data?['id'] as String?;
+          //
+          // if (name != null && id != null) {
+          //   _list.add(GeneralFireBaseList(name: name  , id: id));
+          // }
+
+          Courses data = Courses.fromJson(document.data() as Map<String, dynamic>);
+          _list.add(data);
+
         }
       }
     } catch (e) {

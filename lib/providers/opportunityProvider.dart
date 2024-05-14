@@ -96,6 +96,7 @@ class OpportunityProvider with ChangeNotifier{
                 requirements: document.data().toString().contains('requirements') ? List<String>.from(document['requirements']) : [],
                 fieldsOfStudy: document.data().toString().contains('field_of_study') ? List<String>.from(document['field_of_study']) : [],
                 skills: document.data().toString().contains('skills') ? List<String>.from(document['skills']) : [],
+                courses: document.data().toString().contains('courses') ? List<String>.from(document['courses']) : [],
                 location: document.data().toString().contains('location') ? document.get('location') : '',
                 availability: document.data().toString().contains('availability') ? document.get('availability') : '',
                 deadline: document.data().toString().contains('deadline') ? document.get('deadline') : '',

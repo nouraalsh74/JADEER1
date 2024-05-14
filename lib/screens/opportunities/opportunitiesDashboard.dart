@@ -121,11 +121,11 @@ class _OpportunitiesDashboardState extends State<OpportunitiesDashboard> {
       /// Opportunity Type
       allOpportunityTypeChips.add(GeneralFireBaseList(id: "00" , name: "All"));
       allOpportunityTypeChips.add(GeneralFireBaseList(id: "01" , name: "Internship"));
-      allOpportunityTypeChips.add(GeneralFireBaseList(id: "02" , name: "Co-op"));
-      allOpportunityTypeChips.add(GeneralFireBaseList(id: "03" , name: "Volunteer"));
-      allOpportunityTypeChips.add(GeneralFireBaseList(id: "04" , name: "Fresh graduate"));
-      allOpportunityTypeChips.add(GeneralFireBaseList(id: "05" , name: "Intern"));
-      allOpportunityTypeChips.add(GeneralFireBaseList(id: "06" , name: "Summer internship"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "02" , name: "Entry-level"));
+      allOpportunityTypeChips.add(GeneralFireBaseList(id: "03" , name: "Volunteering"));
+      // allOpportunityTypeChips.add(GeneralFireBaseList(id: "04" , name: "Fresh graduate"));
+      // allOpportunityTypeChips.add(GeneralFireBaseList(id: "05" , name: "Intern"));
+      // allOpportunityTypeChips.add(GeneralFireBaseList(id: "06" , name: "Summer internship"));
 
       selectedOpportunityTypeChip = allOpportunityTypeChips.first ;
 
