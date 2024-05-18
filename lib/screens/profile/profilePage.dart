@@ -226,17 +226,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       "Please select at least 3 interest");
                   return;
                 }
-                else if (isEmailExists(email: _email.text)) {
-                  EasyLoading.showError("Email is exists!");
-                  return;
-                } else if (isPhoneNumberExists(phoneNumber: "+966${_phoneNumber.text}")) {
-                  EasyLoading.showError("Phone Number is exists!");
-                  return;
-                } else if (isIDExists(ID: _id.text)) {
-                  EasyLoading.showError("ID is exists!");
+                else if (interests.length < 3) {
+                  EasyLoading.showError(
+                      "Please select at least 3 interest");
                   return;
                 }
-                //    if (filePathCV != filePathCVBase) {
+
+
+                // else if (isEmailExists(email: _email.text)) {
+                //   EasyLoading.showError("Email is exists!");
+                //   return;
+                // } else if (isPhoneNumberExists(phoneNumber: "+966${_phoneNumber.text}")) {
+                //   EasyLoading.showError("Phone Number is exists!");
+                //   return;
+                // } else if (isIDExists(ID: _id.text)) {
+                //   EasyLoading.showError("ID is exists!");
+                //   return;
+                // }
 
 
 
@@ -448,9 +454,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 hint: "Enter Your ID",
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty ) {
                     return "Please enter your id";
+                  }else if (value.substring(0, 1) != "1" || !RegExp(r'^[0-9]+$').hasMatch(value.substring(1))) {
+                    return "Please enter a valid ID";
+                  } else if (value.length != 10) {
+                    return "ID must be 10 characters long";
                   }
+
 
                   return null;
                 },
@@ -489,8 +500,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   if (value == null || value.isEmpty) {
                     return "Please enter your phone number";
                   }
-                  if (!RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
+                  if (value.substring(0, 1) != "5" || !RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
                     return 'Please enter a valid phone number';
+                  } else if (value.length != 9) {
+                    return "phone number must be 9 numbers";
                   }
                   return null;
                 },

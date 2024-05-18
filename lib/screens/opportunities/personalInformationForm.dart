@@ -114,9 +114,14 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                   hint: "Enter Your ID",
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty ) {
                       return "Please enter your id";
+                    }else if (value.substring(0, 1) != "1" || !RegExp(r'^[0-9]+$').hasMatch(value.substring(1))) {
+                      return "Please enter a valid ID";
+                    } else if (value.length != 10) {
+                      return "ID must be 10 characters long";
                     }
+
 
                     return null;
                   },
@@ -153,8 +158,10 @@ class _PersonalInformationFormState extends State<PersonalInformationForm> {
                     if (value == null || value.isEmpty) {
                       return "Please enter your phone number";
                     }
-                    if (!RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
+                    if (value.substring(0, 1) != "5" || !RegExp(r'^[0-9+]{1,}').hasMatch(value)) {
                       return 'Please enter a valid phone number';
+                    } else if (value.length != 9) {
+                      return "phone number must be 9 numbers";
                     }
                     return null;
                   },
