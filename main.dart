@@ -10,7 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'configuration/size_config.dart';
 import 'configuration/theme.dart';
-//sara latest edit..
+
+//sara latest version...
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 SharedPreferences? loginDataHistory;
 
